@@ -28,7 +28,7 @@
     <!-- ====== HERO ====== -->
     <header class="relative overflow-hidden">
       <div class="absolute inset-0">
-        <img src="/img/AdobeStock_482999310.jpg" alt="Semiconductor wafer" class="w-full h-full object-cover opacity-35" />
+        <img src="/img/AdobeStock_482999310.jpg" alt="Semiconductor wafer" class="w-full h-full object-cover opacity-50" />
         <div class="absolute inset-0 bg-gradient-to-b from-oxford-blue/60 via-oxford-blue/80 to-oxford-blue" />
       </div>
       <div class="relative max-w-4xl mx-auto px-6 py-24 md:py-32 text-center space-y-8">
