@@ -148,13 +148,13 @@ app.get('/api/whoami', requireAdmin, (_req, res) => {
   res.json({ authenticated: true })
 })
 
+
 // SPA fallback — serve index.html for all non-API routes in production
 if (process.env.NODE_ENV === 'production') {
   app.get('*', (_req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'))
   })
 }
-
 
 // DEBUG endpoint - remove in production
 app.get('/api/debug', (req, res) => {
