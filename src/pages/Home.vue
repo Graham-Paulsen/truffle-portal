@@ -369,7 +369,7 @@
           </div>
           <div class="relative min-h-[400px] md:min-h-0">
             <img
-              src="/img/file_402.jpg"
+              src="/img/file_403.jpg"
               alt="Cape Town cityscape with Table Mountain"
               class="w-full h-full object-cover"
             />
