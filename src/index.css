@@ -14,6 +14,10 @@
     background-color: #131A30;
     color: #E5DEED;
   }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Century Gothic', 'CenturyGothic', 'AppleGothic', 'Futura', 'Avenir', 'Inter', system-ui, sans-serif;
+  }
 }
 
 @layer components {
