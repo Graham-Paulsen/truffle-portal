@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 8080
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'WWPS2026'
 const LOXO_API_KEY = process.env.LOXO_API_KEY || ''
 const LOXO_BASE = 'https://truffle-talent.app.loxo.co/api/truffle-talent'
+const WWPS_JOB_ID = 3568888
 
 app.use(express.json())
 
@@ -56,6 +57,15 @@ function requireAdmin(req, res, next) {
   next()
 }
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+function loxoHeaders() {
+  return {
+    Authorization: `Bearer ${LOXO_API_KEY}`,
+    'Content-Type': 'application/json',
+  }
+}
+
 // Submit screening
 app.post('/api/submit', async (req, res) => {
   const { name, email, phone, answers, score, fit_level } = req.body
@@ -64,73 +74,145 @@ app.post('/api/submit', async (req, res) => {
     return res.status(400).json({ error: 'Email is required' })
   }
 
-  let loxoid = null
-
-  // Insert into PostgreSQL
+  // Block duplicate submissions
   if (pool) {
     try {
-      const result = await pool.query(
-        `INSERT INTO submissions (name, email, phone, answers, score, fit_level)
-         VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
-        [name || null, email, phone || null, JSON.stringify(answers), score, fit_level]
+      const dupCheck = await pool.query('SELECT id FROM submissions WHERE email = $1 LIMIT 1', [email])
+      if (dupCheck.rows.length > 0) {
+        return res.status(409).json({
+          success: false,
+          error: 'duplicate',
+          message: 'This email has already submitted a screening.',
+        })
+      }
+    } catch (dbErr) {
+      console.error('DB duplicate check error:', dbErr.message)
+    }
+  }
+
+  let loxoid = null
+  let existing = false
+
+  if (LOXO_API_KEY) {
+    try {
+      // Search Loxo for existing person by email
+      const searchRes = await axios.get(`${LOXO_BASE}/people`, {
+        params: { query: email },
+        headers: loxoHeaders(),
+        timeout: 10000,
+      })
+
+      const people = searchRes.data?.people || []
+      const match = people.find((p) =>
+        (p.emails || []).some(
+          (e) => e.value && e.value.toLowerCase() === email.toLowerCase()
+        )
       )
-      const submissionId = result.rows[0]?.id
 
-      // Create person in Loxo
-      if (LOXO_API_KEY) {
-        try {
-          const nameParts = (name || '').trim().split(' ')
-          const firstName = nameParts[0] || ''
-          const lastName = nameParts.slice(1).join(' ') || ''
-
-          const loxoPayload = {
+      if (match) {
+        // Update existing person
+        existing = true
+        loxoid = match.id
+        await axios.patch(
+          `${LOXO_BASE}/people/${loxoid}`,
+          {
+            person: {
+              salary: answers?.ctc_zar || 0,
+              phones: phone ? [{ value: phone }] : [],
+            },
+          },
+          { headers: loxoHeaders(), timeout: 10000 }
+        )
+      } else {
+        // Create new person
+        const loxoRes = await axios.post(
+          `${LOXO_BASE}/people`,
+          {
             person: {
               name: name || 'Unknown',
               emails: [{ value: email }],
               phones: phone ? [{ value: phone }] : [],
               salary: answers?.ctc_zar || 0,
-            }
-          }
+            },
+          },
+          { headers: loxoHeaders(), timeout: 10000 }
+        )
+        loxoid = loxoRes.data?.id || loxoRes.data?.person?.id || null
+      }
 
-          const loxoRes = await axios.post(
-            `${LOXO_BASE}/people`,
-            loxoPayload,
-            {
-              headers: {
-                Authorization: `Bearer ${LOXO_API_KEY}`,
-                'Content-Type': 'application/json',
+      if (loxoid) {
+        // Add to WWPS job — fire 6 times with 500ms delay to advance through stages to Screening
+        // Applied → Longlist → Outbound → Screening
+        for (let i = 0; i < 6; i++) {
+          if (i > 0) await sleep(500)
+          try {
+            await axios.post(
+              `${LOXO_BASE}/person_events`,
+              {
+                person_event: {
+                  person_id: loxoid,
+                  job_id: WWPS_JOB_ID,
+                  activity_type_id: 1941923,
+                  notes: `<p>Auto-screened via Truffle Portal. Score: ${score}. Fit: ${fit_level}.</p>`,
+                },
               },
-              timeout: 10000,
-            }
-          )
-
-          loxoid = loxoRes.data?.id || loxoRes.data?.person?.id || null
-
-          // Update loxoid in DB
-          if (loxoid && submissionId) {
-            await pool.query(
-              'UPDATE submissions SET loxoid = $1 WHERE id = $2',
-              [String(loxoid), submissionId]
+              { headers: loxoHeaders(), timeout: 10000 }
             )
+          } catch (evErr) {
+            console.error(`Job event ${i + 1} error:`, evErr?.response?.data || evErr.message)
           }
-        } catch (loxoErr) {
-          console.error('Loxo API error:', loxoErr?.response?.data || loxoErr.message)
+        }
+
+        // Person-level activity note with full screening results (no job_id)
+        const noteLines = [
+          `<li>Timezone overlap: ${answers?.timezone_overlap || ''}</li>`,
+          `<li>Remote work: ${answers?.remote_work || ''}</li>`,
+          `<li>Notice period: ${answers?.notice_period || ''}</li>`,
+          `<li>CTC: R${answers?.ctc_zar || 0}</li>`,
+          `<li>Availability: ${answers?.availability_issue === 'yes' ? (answers?.availability_note || 'yes') : (answers?.availability_issue || '')}</li>`,
+        ].join('')
+
+        try {
+          await axios.post(
+            `${LOXO_BASE}/person_events`,
+            {
+              person_event: {
+                person_id: loxoid,
+                activity_type_id: 1941923,
+                notes: `<p><strong>Truffle Portal Screening Results</strong></p><ul>${noteLines}</ul><p><strong>Score: ${score}/100 | Fit: ${fit_level}</strong></p>`,
+              },
+            },
+            { headers: loxoHeaders(), timeout: 10000 }
+          )
+        } catch (noteErr) {
+          console.error('Activity note error:', noteErr?.response?.data || noteErr.message)
         }
       }
+    } catch (loxoErr) {
+      console.error('Loxo error:', loxoErr?.response?.data || loxoErr.message)
+    }
+  }
+
+  // Insert into PostgreSQL
+  if (pool) {
+    try {
+      await pool.query(
+        `INSERT INTO submissions (name, email, phone, answers, score, fit_level, loxoid)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [name || null, email, phone || null, JSON.stringify(answers), score, fit_level, loxoid ? String(loxoid) : null]
+      )
     } catch (dbErr) {
-      console.error('DB error:', dbErr.message)
+      console.error('DB insert error:', dbErr.message)
       return res.status(500).json({ error: 'Database error' })
     }
   }
 
-  return res.json({ success: true, loxoid: loxoid ? String(loxoid) : null })
+  return res.json({ success: true, loxoid: loxoid ? String(loxoid) : null, existing })
 })
 
 // Get all submissions (admin)
 app.get('/api/submissions', requireAdmin, async (_req, res) => {
-  if (!pool) {
-    return res.json([])
-  }
+  if (!pool) return res.json([])
   try {
     const result = await pool.query(
       'SELECT id, name, email, score, fit_level, created_at, loxoid FROM submissions ORDER BY score DESC'
@@ -145,17 +227,6 @@ app.get('/api/submissions', requireAdmin, async (_req, res) => {
 // Whoami (auth check)
 app.get('/api/whoami', requireAdmin, (_req, res) => {
   res.json({ authenticated: true })
-})
-
-
-// DEBUG endpoint - must be before SPA fallback
-app.get('/api/debug', (req, res) => {
-  res.json({
-    hasPool: !!pool,
-    hasDatabaseUrl: !!process.env.DATABASE_URL,
-    nodeEnv: process.env.NODE_ENV,
-    hasLoxoKey: !!process.env.LOXO_API_KEY
-  })
 })
 
 // SPA fallback — serve index.html for all non-API routes in production

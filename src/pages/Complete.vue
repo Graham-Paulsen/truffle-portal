@@ -122,7 +122,9 @@ let screeningData: { answers: Record<string, unknown>; score: number; fitLevel: 
 
 onMounted(() => {
   const raw = sessionStorage.getItem('screening_result')
+  const formSaved = localStorage.getItem('truffle_portal_form')
   if (!raw) {
+    // No completed submission state — send back to screen (may resume from localStorage there)
     router.replace('/screen')
     return
   }
@@ -147,9 +149,14 @@ async function submitForm() {
     fitLevel.value = screeningData.fitLevel
     revealed.value = true
     sessionStorage.removeItem('screening_result')
-  } catch (err) {
+    localStorage.removeItem('truffle_portal_form')
+  } catch (err: any) {
     console.error(err)
-    submitError.value = 'Something went wrong. Please try again.'
+    if (err?.response?.status === 409) {
+      submitError.value = err.response.data?.message || 'This email has already submitted a screening.'
+    } else {
+      submitError.value = 'Something went wrong. Please try again.'
+    }
   } finally {
     submitting.value = false
   }

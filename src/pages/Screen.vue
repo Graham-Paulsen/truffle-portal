@@ -7,6 +7,13 @@
       </router-link>
     </nav>
 
+    <!-- Welcome back banner -->
+    <div v-if="restoredFromStorage" class="px-6 pt-4 max-w-xl mx-auto w-full">
+      <div class="bg-veronica/10 border border-veronica/30 rounded-lg px-4 py-2.5 text-sm text-lavender/80">
+        Welcome back — picking up where you left off
+      </div>
+    </div>
+
     <!-- Progress -->
     <div class="px-6 pt-6 max-w-xl mx-auto w-full">
       <StepProgress :current-step="currentStep" :total-steps="5" />
@@ -96,7 +103,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive } from 'vue'
+import { ref, computed, reactive, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import TruffleLogo from '../components/TruffleLogo.vue'
 import StepProgress from '../components/StepProgress.vue'
@@ -108,6 +115,7 @@ const currentStep = ref(1)
 const transitionName = ref('slide-left')
 const ctcError = ref('')
 const noteError = ref('')
+const restoredFromStorage = ref(false)
 
 const answers = reactive({
   timezone_overlap: '' as string,
@@ -117,6 +125,31 @@ const answers = reactive({
   availability_issue: '' as string,
   availability_note: '' as string,
 })
+
+onMounted(() => {
+  const saved = localStorage.getItem('truffle_portal_form')
+  if (saved) {
+    try {
+      const state = JSON.parse(saved)
+      if (state.answers) Object.assign(answers, state.answers)
+      if (state.currentStep && state.currentStep >= 1 && state.currentStep <= 5) {
+        currentStep.value = state.currentStep
+      }
+      restoredFromStorage.value = true
+    } catch {}
+  }
+})
+
+watch(
+  [currentStep, answers],
+  () => {
+    localStorage.setItem('truffle_portal_form', JSON.stringify({
+      answers: { ...answers },
+      currentStep: currentStep.value,
+    }))
+  },
+  { deep: true }
+)
 
 const timezoneOptions = [
   { label: 'Yes — I have at least 5 hours overlap', value: 'yes' },
@@ -187,13 +220,13 @@ function goNext() {
       return
     }
     noteError.value = ''
-    // Calculate and save result
     const result = calculateScore()
     sessionStorage.setItem('screening_result', JSON.stringify({
       answers: { ...answers },
       score: result.score,
       fitLevel: result.fitLevel,
     }))
+    localStorage.removeItem('truffle_portal_form')
     router.push('/complete')
     return
   }
