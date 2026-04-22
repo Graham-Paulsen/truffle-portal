@@ -537,7 +537,7 @@
           This isn't just another contract. We invest in our team because we're building for the long term.
         </p>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
           <div class="p-5 rounded-xl bg-white/[0.03] border border-lavender/10 text-center space-y-3">
             <div class="w-12 h-12 rounded-xl bg-cyclamen/10 border border-cyclamen/20 flex items-center justify-center mx-auto text-2xl">🌐</div>
             <div class="text-white font-semibold text-sm">Global Exposure</div>
@@ -587,16 +587,6 @@
             <div class="w-12 h-12 rounded-xl bg-cyclamen/10 border border-cyclamen/20 flex items-center justify-center mx-auto text-2xl">📚</div>
             <div class="text-white font-semibold text-sm">Ongoing L&D Support</div>
             <p class="text-lavender/50 text-xs leading-relaxed">Continuous learning and development. Your growth is part of the plan</p>
-          </div>
-          <div class="p-5 rounded-xl bg-white/[0.03] border border-lavender/10 text-center space-y-3">
-            <div class="w-12 h-12 rounded-xl bg-cyclamen/10 border border-cyclamen/20 flex items-center justify-center mx-auto text-2xl">TBD</div>
-            <div class="text-white font-semibold text-sm">Coming Soon</div>
-            <p class="text-lavender/50 text-xs leading-relaxed">Placeholder</p>
-          </div>
-          <div class="p-5 rounded-xl bg-white/[0.03] border border-lavender/10 text-center space-y-3">
-            <div class="w-12 h-12 rounded-xl bg-cyclamen/10 border border-cyclamen/20 flex items-center justify-center mx-auto text-2xl">TBD</div>
-            <div class="text-white font-semibold text-sm">Coming Soon</div>
-            <p class="text-lavender/50 text-xs leading-relaxed">Placeholder</p>
           </div>
         </div>
       </div>
