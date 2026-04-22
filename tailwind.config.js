@@ -19,6 +19,7 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        heading: ['Century Gothic', 'CenturyGothic', 'AppleGothic', 'Futura', 'Avenir', 'Inter', 'system-ui', 'sans-serif'],
       },
       animation: {
         scroll: 'scroll 20s linear infinite',
