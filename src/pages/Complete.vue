@@ -122,7 +122,7 @@ let screeningData: { answers: Record<string, unknown>; score: number; fitLevel: 
 
 onMounted(() => {
   const raw = sessionStorage.getItem('screening_result')
-  const formSaved = localStorage.getItem('truffle_portal_form')
+  localStorage.getItem('truffle_portal_form')
   if (!raw) {
     // No completed submission state — send back to screen (may resume from localStorage there)
     router.replace('/screen')
