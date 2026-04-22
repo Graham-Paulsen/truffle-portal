@@ -84,13 +84,10 @@ app.post('/api/submit', async (req, res) => {
           const lastName = nameParts.slice(1).join(' ') || ''
 
           const loxoPayload = {
-            first_name: firstName,
-            last_name: lastName,
-            email,
-            phone: phone || '',
+            name: name || 'Unknown',
+            emails: [{ value: email }],
+            phones: phone ? [{ value: phone }] : [],
             salary: answers?.ctc_zar || 0,
-            notes: JSON.stringify({ answers, score, fit_level }),
-            person_types: ['Candidate'],
           }
 
           const loxoRes = await axios.post(

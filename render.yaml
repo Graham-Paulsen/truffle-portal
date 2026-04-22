@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: truffle-portal
+    env: node
+    region: oregon
+    plan: free
+    repo: https://github.com/Graham-Paulsen/truffle-portal
+    branch: main
+    buildCommand: npm install && npm run build
+    startCommand: node proxy-server.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: LOXO_API_KEY
+        value: "125ad58eeb80ebcc8961900b97a960217cc941b049295c2eeaa9f571cd7f3db076543ad9613a75451b2cc14be626b5c679d530b2bdf2a76cc2f388bda64a1d051908f366161bb07cca2da71af45bff932b0f0cb406f7de2a6884549e9ea8faaa1531003790f454fb1bf8545c57dea17d0eb999297e84068cc90b138f617b646e"
+      - key: ADMIN_PASSWORD
+        value: WWPS2026
+      - key: DATABASE_URL
+        value: "postgresql://wwps_screening_user:CrhbzTUvP2w4l8tRd1d3Ji35cqJqgLys@dpg-d7k6eggsfn5c73bqjlvg-a/wwps_screening"
