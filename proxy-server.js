@@ -155,6 +155,17 @@ if (process.env.NODE_ENV === 'production') {
   })
 }
 
+
+// DEBUG endpoint - remove in production
+app.get('/api/debug', (req, res) => {
+  res.json({
+    hasPool: !!pool,
+    hasDatabaseUrl: !!process.env.DATABASE_URL,
+    nodeEnv: process.env.NODE_ENV,
+    hasLoxoKey: !!process.env.LOXO_API_KEY
+  })
+})
+
 app.listen(PORT, () => {
   console.log(`Truffle Portal server running on port ${PORT}`)
 })
