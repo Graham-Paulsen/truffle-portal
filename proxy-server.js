@@ -149,14 +149,7 @@ app.get('/api/whoami', requireAdmin, (_req, res) => {
 })
 
 
-// SPA fallback — serve index.html for all non-API routes in production
-if (process.env.NODE_ENV === 'production') {
-  app.get('*', (_req, res) => {
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'))
-  })
-}
-
-// DEBUG endpoint - remove in production
+// DEBUG endpoint - must be before SPA fallback
 app.get('/api/debug', (req, res) => {
   res.json({
     hasPool: !!pool,
@@ -165,6 +158,13 @@ app.get('/api/debug', (req, res) => {
     hasLoxoKey: !!process.env.LOXO_API_KEY
   })
 })
+
+// SPA fallback — serve index.html for all non-API routes in production
+if (process.env.NODE_ENV === 'production') {
+  app.get('*', (_req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'))
+  })
+}
 
 app.listen(PORT, () => {
   console.log(`Truffle Portal server running on port ${PORT}`)
