@@ -95,17 +95,18 @@ app.post('/api/submit', async (req, res) => {
 
   if (LOXO_API_KEY) {
     try {
-      // Search Loxo for existing person by email
+      // Exact email lookup in Loxo — search with per_page=50 to maximise matches
       const searchRes = await axios.get(`${LOXO_BASE}/people`, {
-        params: { query: email },
+        params: { query: email, per_page: 50 },
         headers: loxoHeaders(),
         timeout: 10000,
       })
 
       const people = searchRes.data?.people || []
+      const emailLower = email.toLowerCase()
       const match = people.find((p) =>
         (p.emails || []).some(
-          (e) => e.value && e.value.toLowerCase() === email.toLowerCase()
+          (e) => e.value && e.value.toLowerCase().trim() === emailLower
         )
       )
 
