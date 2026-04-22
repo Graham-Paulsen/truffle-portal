@@ -142,7 +142,7 @@ app.post('/api/submit', async (req, res) => {
       }
 
       if (loxoid) {
-        // Add to WWPS job — fire 6 times with 500ms delay to advance through stages to Screening
+        // Add to WWPS job — fire events with no notes to advance through stages silently
         // Applied → Longlist → Outbound → Screening
         for (let i = 0; i < 6; i++) {
           if (i > 0) await sleep(500)
@@ -154,7 +154,6 @@ app.post('/api/submit', async (req, res) => {
                   person_id: loxoid,
                   job_id: WWPS_JOB_ID,
                   activity_type_id: 1941923,
-                  notes: `<p>Auto-screened via Truffle Portal. Score: ${score}. Fit: ${fit_level}.</p>`,
                 },
               },
               { headers: loxoHeaders(), timeout: 10000 }
