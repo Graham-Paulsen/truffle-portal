@@ -31,11 +31,15 @@
 
         <!-- Value prop -->
         <p class="text-lg md:text-xl text-lavender/80 leading-relaxed max-w-2xl mx-auto">
-          Our client is a leading semiconductor company running a large-scale data migration and
-          analytics modernisation programme on Azure and Microsoft Fabric. We are building a
-          South African team to serve as a timezone bridge to the US practice — enabling overlap
-          hours that extend their engineering day. This is a long-term programme with strong growth
-          potential for the right candidates.
+          We're building a specialist data engineering team for one of the world's top five
+          semiconductor manufacturers. The US semiconductor industry holds over 50% of global
+          market share, with sales projected to hit $1 trillion by 2026. This is a multi-year
+          programme inheriting 20 to 25 years of reporting infrastructure across thousands of
+          isolated sites, consolidating it into modern Azure and Fabric platforms.
+        </p>
+        <p class="text-lg md:text-xl text-lavender/80 leading-relaxed max-w-2xl mx-auto">
+          Our client has moved 100% of their development and reporting to us. The scale is
+          enormous. The work is real. And they're hiring in South Africa.
         </p>
 
         <!-- CTA -->
@@ -52,23 +56,52 @@
       </div>
     </main>
 
+    <!-- Stats -->
+    <section class="px-6 py-16 border-t border-lavender/10">
+      <div class="max-w-3xl mx-auto text-center space-y-6">
+        <h2 class="text-2xl md:text-3xl font-bold text-white">The Scale</h2>
+        <p class="text-lavender/80 leading-relaxed max-w-2xl mx-auto">
+          Over 35GW of data centre capacity is under construction in North America alone. More than
+          $70 billion in quarterly construction spending. The CHIPS Act is driving a manufacturing
+          resurgence that will triple domestic chipmaking capacity by 2032. Behind every one of
+          those facilities is a data infrastructure that needs building, migrating, and maintaining.
+          That is what you will be working on.
+        </p>
+      </div>
+    </section>
+
+    <!-- Why SA -->
+    <section class="px-6 py-16 border-t border-lavender/10">
+      <div class="max-w-3xl mx-auto text-center space-y-6">
+        <h2 class="text-2xl md:text-3xl font-bold text-white">Why South Africa</h2>
+        <p class="text-lavender/80 leading-relaxed max-w-2xl mx-auto">
+          South Africa sits between the US and Asia. Same timezone as Ireland. The client explicitly
+          values this position as a strategic bridge. This is not a cost arbitrage play. It is a
+          follow-the-sun delivery model.
+        </p>
+      </div>
+    </section>
+
     <!-- Features strip -->
     <section class="px-6 py-16 border-t border-lavender/10">
-      <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="card text-center space-y-3">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyclamen to-veronica flex items-center justify-center mx-auto text-white text-2xl">⚡</div>
-          <h3 class="font-semibold text-white">2-Minute Screening</h3>
-          <p class="text-lavender/60 text-sm">Five targeted questions to assess your fit for the role. No CV upload required.</p>
-        </div>
-        <div class="card text-center space-y-3">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyclamen to-veronica flex items-center justify-center mx-auto text-white text-2xl">🌍</div>
-          <h3 class="font-semibold text-white">Remote-First Role</h3>
-          <p class="text-lavender/60 text-sm">Work from anywhere in South Africa. Overlap with US Eastern Time required.</p>
-        </div>
-        <div class="card text-center space-y-3">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyclamen to-veronica flex items-center justify-center mx-auto text-white text-2xl">🚀</div>
-          <h3 class="font-semibold text-white">Long-Term Programme</h3>
-          <p class="text-lavender/60 text-sm">Not a short-term contract — this is a sustained programme with career growth.</p>
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-2xl md:text-3xl font-bold text-white text-center mb-10">What We're Looking For</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="card text-center space-y-3">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyclamen to-veronica flex items-center justify-center mx-auto text-white text-2xl">🔧</div>
+            <h3 class="font-semibold text-white">Problem Solvers</h3>
+            <p class="text-lavender/60 text-sm">People who enjoy reverse engineering. Self-starters who can be embedded with a business unit and own the relationship.</p>
+          </div>
+          <div class="card text-center space-y-3">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyclamen to-veronica flex items-center justify-center mx-auto text-white text-2xl">📈</div>
+            <h3 class="font-semibold text-white">Growth Hungry</h3>
+            <p class="text-lavender/60 text-sm">People who want to learn into modern technology. Legacy experience is valued, not penalised.</p>
+          </div>
+          <div class="card text-center space-y-3">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyclamen to-veronica flex items-center justify-center mx-auto text-white text-2xl">🌍</div>
+            <h3 class="font-semibold text-white">Fully Remote</h3>
+            <p class="text-lavender/60 text-sm">Long-term engagement. Competitive, USD-linked packages. South Africa based, overlapping with US Eastern Time.</p>
+          </div>
         </div>
       </div>
     </section>
