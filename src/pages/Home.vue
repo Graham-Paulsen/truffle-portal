@@ -115,7 +115,7 @@
     </div>
 
     <!-- ====== THE INDUSTRY ====== -->
-    <section id="industry" class="scroll-mt-20 border-t border-lavender/10">
+    <section id="industry" class="scroll-mt-20 border-t border-lavender/10 bg-gradient-to-r from-oxford-blue to-[#22283d]">
       <div class="max-w-4xl mx-auto px-6 py-20">
         <div class="flex items-center gap-3 mb-10">
           <div class="w-1 h-8 bg-cyclamen rounded-full" />
@@ -282,7 +282,7 @@
     </div>
 
     <!-- ====== THE PROGRAMME ====== -->
-    <section id="program" class="scroll-mt-20 border-t border-lavender/10">
+    <section id="program" class="scroll-mt-20 border-t border-lavender/10 bg-gradient-to-r from-oxford-blue to-[#22283d]">
       <div class="max-w-4xl mx-auto px-6 py-20">
         <div class="flex items-center gap-3 mb-10">
           <div class="w-1 h-8 bg-cyclamen rounded-full" />
@@ -380,7 +380,7 @@
     </section>
 
     <!-- ====== THE TEAM ====== -->
-    <section id="team" class="scroll-mt-20 border-t border-lavender/10">
+    <section id="team" class="scroll-mt-20 border-t border-lavender/10 bg-gradient-to-r from-oxford-blue to-[#22283d]">
       <div class="max-w-4xl mx-auto px-6 py-20">
         <div class="flex items-center gap-3 mb-10">
           <div class="w-1 h-8 bg-cyclamen rounded-full" />
@@ -526,7 +526,7 @@
     </section>
 
     <!-- ====== EVP ====== -->
-    <section id="evp" class="scroll-mt-20 border-t border-lavender/10">
+    <section id="evp" class="scroll-mt-20 border-t border-lavender/10 bg-gradient-to-r from-oxford-blue to-[#22283d]">
       <div class="max-w-4xl mx-auto px-6 py-20">
         <div class="flex items-center gap-3 mb-4">
           <div class="w-1 h-8 bg-cyclamen rounded-full" />
