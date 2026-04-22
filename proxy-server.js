@@ -142,10 +142,25 @@ app.post('/api/submit', async (req, res) => {
       }
 
       if (loxoid) {
-        // Add to WWPS job — fire events with no notes to advance through stages silently
-        // Applied → Longlist → Outbound → Screening
-        for (let i = 0; i < 6; i++) {
-          if (i > 0) await sleep(500)
+        // Check if person is already on the WWPS job
+        let alreadyOnJob = false
+        try {
+          const candRes = await axios.get(
+            `${LOXO_BASE}/jobs/${WWPS_JOB_ID}/candidates`,
+            { params: { person_id: loxoid, per_page: 1 }, headers: loxoHeaders(), timeout: 10000 }
+          )
+          const candidates = candRes.data?.candidates || candRes.data || []
+          alreadyOnJob = candidates.some(
+            (c) => String(c.person_id || c.person?.id) === String(loxoid)
+          )
+        } catch (lookupErr) {
+          console.error('Job candidate lookup error:', lookupErr?.response?.data || lookupErr.message)
+        }
+
+        // Stage advancement: 2 calls max, clean activity feed
+        // 1. added_to_job (1941928) → lands in Longlist — only if not already on job
+        // 2. consultant_interview (1941943) → moves to Screening
+        if (!alreadyOnJob) {
           try {
             await axios.post(
               `${LOXO_BASE}/person_events`,
@@ -153,14 +168,30 @@ app.post('/api/submit', async (req, res) => {
                 person_event: {
                   person_id: loxoid,
                   job_id: WWPS_JOB_ID,
-                  activity_type_id: 1941923,
+                  activity_type_id: 1941928, // added_to_job
                 },
               },
               { headers: loxoHeaders(), timeout: 10000 }
             )
           } catch (evErr) {
-            console.error(`Job event ${i + 1} error:`, evErr?.response?.data || evErr.message)
+            console.error('Added to job error:', evErr?.response?.data || evErr.message)
           }
+        }
+
+        try {
+          await axios.post(
+            `${LOXO_BASE}/person_events`,
+            {
+              person_event: {
+                person_id: loxoid,
+                job_id: WWPS_JOB_ID,
+                activity_type_id: 1941943, // consultant_interview → Screening
+              },
+            },
+            { headers: loxoHeaders(), timeout: 10000 }
+          )
+        } catch (evErr) {
+          console.error('Screening stage error:', evErr?.response?.data || evErr.message)
         }
 
         // Person-level activity note with full screening results (no job_id)

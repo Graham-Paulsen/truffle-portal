@@ -1,114 +1,450 @@
 <template>
   <div class="min-h-screen bg-oxford-blue flex flex-col">
+
     <!-- Nav -->
     <nav class="flex items-center justify-between px-6 py-4 border-b border-lavender/10 sticky top-0 z-50 bg-oxford-blue/95 backdrop-blur-sm">
       <router-link to="/" class="flex items-center">
         <TruffleLogo className="h-8 w-auto" />
       </router-link>
-      <router-link
-        to="/admin"
-        class="text-lavender/60 hover:text-lavender text-sm transition-colors"
-      >
-        Admin
-      </router-link>
+      <div class="flex items-center gap-6">
+        <router-link to="/screen" class="text-cyclamen hover:text-cyclamen/80 text-sm font-medium transition-colors">
+          Apply Now
+        </router-link>
+        <router-link to="/admin" class="text-lavender/40 hover:text-lavender/60 text-xs transition-colors">
+          Admin
+        </router-link>
+      </div>
     </nav>
 
-    <!-- Hero -->
-    <main class="flex-1 flex flex-col items-center justify-center px-6 py-20 text-center">
-      <div class="max-w-3xl mx-auto space-y-8">
-        <!-- Label -->
+    <!-- ====== HERO ====== -->
+    <header class="relative overflow-hidden">
+      <div class="absolute inset-0">
+        <img src="/img/AdobeStock_482999310.jpg" alt="Semiconductor wafer" class="w-full h-full object-cover opacity-20" />
+        <div class="absolute inset-0 bg-gradient-to-b from-oxford-blue/60 via-oxford-blue/80 to-oxford-blue" />
+      </div>
+      <div class="relative max-w-4xl mx-auto px-6 py-24 md:py-32 text-center space-y-8">
         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyclamen/30 bg-cyclamen/10 text-cyclamen text-sm font-medium">
           <span class="w-1.5 h-1.5 rounded-full bg-cyclamen animate-pulse" />
-          WWPS Semiconductor Analytics Practice
+          Truffle Talent for WWPS
         </div>
-
-        <!-- Heading -->
-        <h1 class="text-4xl md:text-6xl font-bold text-white leading-tight">
-          Join a Global<br />
+        <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1] tracking-tight">
+          Building a Global<br />
           <span class="gradient-text">Semiconductor Analytics</span><br />
-          Practice
+          Practice from South Africa
         </h1>
-
-        <!-- Value prop -->
-        <p class="text-lg md:text-xl text-lavender/80 leading-relaxed max-w-2xl mx-auto">
-          We're building a specialist data engineering team for one of the world's top five
-          semiconductor manufacturers. The US semiconductor industry holds over 50% of global
-          market share, with sales projected to hit $1 trillion by 2026. This is a multi-year
-          programme inheriting 20 to 25 years of reporting infrastructure across thousands of
-          isolated sites, consolidating it into modern Azure and Fabric platforms.
+        <p class="text-lg md:text-xl text-lavender/70 leading-relaxed max-w-2xl mx-auto">
+          An offshore data engineering programme for one of the world's top five semiconductor
+          manufacturers. 3,000 legacy reports. 20 years of fragmented infrastructure.
+          One team to bring it into the modern era.
         </p>
-        <p class="text-lg md:text-xl text-lavender/80 leading-relaxed max-w-2xl mx-auto">
-          Our client has moved 100% of their development and reporting to us. The scale is
-          enormous. The work is real. And they're hiring in South Africa.
-        </p>
-
-        <!-- CTA -->
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-          <router-link to="/screen" class="btn-primary text-lg px-8 py-4 rounded-xl">
-            Start Screening →
+        <div class="pt-4">
+          <router-link to="/screen" class="btn-primary text-lg px-10 py-4 rounded-xl inline-block">
+            Start Your Application
           </router-link>
         </div>
-
-        <!-- Trust line -->
-        <p class="text-lavender/40 text-sm pt-4">
-          Truffle has been placing analytics and actuarial talent for 15+ years
-        </p>
       </div>
-    </main>
+    </header>
 
-    <!-- Stats -->
-    <section class="px-6 py-16 border-t border-lavender/10">
-      <div class="max-w-3xl mx-auto text-center space-y-6">
-        <h2 class="text-2xl md:text-3xl font-bold text-white">The Scale</h2>
-        <p class="text-lavender/80 leading-relaxed max-w-2xl mx-auto">
-          Over 35GW of data centre capacity is under construction in North America alone. More than
-          $70 billion in quarterly construction spending. The CHIPS Act is driving a manufacturing
-          resurgence that will triple domestic chipmaking capacity by 2032. Behind every one of
-          those facilities is a data infrastructure that needs building, migrating, and maintaining.
-          That is what you will be working on.
-        </p>
-      </div>
-    </section>
+    <!-- ====== THE BRIEF ====== -->
+    <section class="border-t border-lavender/10">
+      <div class="max-w-4xl mx-auto px-6 py-20">
+        <div class="flex items-center gap-3 mb-10">
+          <div class="w-1 h-8 bg-cyclamen rounded-full" />
+          <h2 class="text-sm font-semibold text-cyclamen uppercase tracking-widest">The Brief</h2>
+        </div>
 
-    <!-- Why SA -->
-    <section class="px-6 py-16 border-t border-lavender/10">
-      <div class="max-w-3xl mx-auto text-center space-y-6">
-        <h2 class="text-2xl md:text-3xl font-bold text-white">Why South Africa</h2>
-        <p class="text-lavender/80 leading-relaxed max-w-2xl mx-auto">
-          South Africa sits between the US and Asia. Same timezone as Ireland. The client explicitly
-          values this position as a strategic bridge. This is not a cost arbitrage play. It is a
-          follow-the-sun delivery model.
-        </p>
-      </div>
-    </section>
-
-    <!-- Features strip -->
-    <section class="px-6 py-16 border-t border-lavender/10">
-      <div class="max-w-4xl mx-auto">
-        <h2 class="text-2xl md:text-3xl font-bold text-white text-center mb-10">What We're Looking For</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="card text-center space-y-3">
-            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyclamen to-veronica flex items-center justify-center mx-auto text-white text-2xl">🔧</div>
-            <h3 class="font-semibold text-white">Problem Solvers</h3>
-            <p class="text-lavender/60 text-sm">People who enjoy reverse engineering. Self-starters who can be embedded with a business unit and own the relationship.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          <div>
+            <h3 class="text-2xl md:text-3xl font-bold text-white leading-snug mb-4">
+              A 15-year partnership entering its most ambitious phase
+            </h3>
+            <p class="text-lavender/70 leading-relaxed">
+              WWPS has worked with this semiconductor client for over a decade. Following a massive
+              organisational restructure, the client eliminated all internal IT hiring and moved
+              100% of development and reporting to WWPS. Thousands of isolated sites, each with
+              their own IT department, methodologies, and data systems, are being consolidated under
+              a single programme.
+            </p>
           </div>
-          <div class="card text-center space-y-3">
-            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyclamen to-veronica flex items-center justify-center mx-auto text-white text-2xl">📈</div>
-            <h3 class="font-semibold text-white">Growth Hungry</h3>
-            <p class="text-lavender/60 text-sm">People who want to learn into modern technology. Legacy experience is valued, not penalised.</p>
-          </div>
-          <div class="card text-center space-y-3">
-            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyclamen to-veronica flex items-center justify-center mx-auto text-white text-2xl">🌍</div>
-            <h3 class="font-semibold text-white">Fully Remote</h3>
-            <p class="text-lavender/60 text-sm">Long-term engagement. Competitive, USD-linked packages. South Africa based, overlapping with US Eastern Time.</p>
+          <div class="space-y-6">
+            <div class="p-5 rounded-xl bg-white/[0.03] border border-lavender/10">
+              <div class="text-3xl font-bold text-white mb-1">~3,000</div>
+              <div class="text-lavender/60 text-sm">Reports across the environment to inherit, audit, and modernise</div>
+            </div>
+            <div class="p-5 rounded-xl bg-white/[0.03] border border-lavender/10">
+              <div class="text-3xl font-bold text-white mb-1">20–25 yrs</div>
+              <div class="text-lavender/60 text-sm">Of legacy reporting across multiple eras of Microsoft technology</div>
+            </div>
+            <div class="p-5 rounded-xl bg-white/[0.03] border border-lavender/10">
+              <div class="text-3xl font-bold text-white mb-1">60–70</div>
+              <div class="text-lavender/60 text-sm">Active backlog tasks, growing by ~10 every week</div>
+            </div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- ====== FULL-WIDTH IMAGE BREAK ====== -->
+    <div class="relative h-64 md:h-96 overflow-hidden">
+      <img src="/img/AdobeStock_499684822.jpg" alt="Data centre infrastructure" class="w-full h-full object-cover" />
+      <div class="absolute inset-0 bg-gradient-to-r from-oxford-blue/80 to-oxford-blue/40" />
+      <div class="absolute inset-0 flex items-center px-6 md:px-16">
+        <blockquote class="max-w-xl">
+          <p class="text-xl md:text-2xl text-white font-light leading-relaxed italic">
+            "They did all of this in-house... they have already made the move that no, we're going
+            to bring this out of house... they decided that they want to go 100% outsourced to us."
+          </p>
+          <cite class="block mt-4 text-cyclamen text-sm not-italic">— Nick Dini, WWPS</cite>
+        </blockquote>
+      </div>
+    </div>
+
+    <!-- ====== THE CHALLENGE ====== -->
+    <section class="border-t border-lavender/10">
+      <div class="max-w-4xl mx-auto px-6 py-20">
+        <div class="flex items-center gap-3 mb-10">
+          <div class="w-1 h-8 bg-cyclamen rounded-full" />
+          <h2 class="text-sm font-semibold text-cyclamen uppercase tracking-widest">The Challenge</h2>
+        </div>
+
+        <h3 class="text-2xl md:text-3xl font-bold text-white leading-snug mb-8">
+          Reverse engineering two decades of fragmented data infrastructure
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          <div class="space-y-6">
+            <p class="text-lavender/70 leading-relaxed">
+              Multiple self-governing organisations were merged, each with their own IT departments,
+              developers, and methodologies. Zero cross-pollination. The people who built these
+              systems are no longer there. Sometimes nobody remembers where the source files are.
+            </p>
+            <p class="text-lavender/70 leading-relaxed">
+              Four to five enterprise data warehouses. A patchwork of on-prem and cloud, with the
+              on-prem footprint still growing as new assets are discovered. SSIS packages from the
+              early 2000s sitting alongside modern Azure Data Factory pipelines.
+            </p>
+          </div>
+          <div class="space-y-4">
+            <div class="callout-card">
+              <p class="text-white/90 text-sm leading-relaxed italic">
+                "Those that were owning it are no longer there. So sometimes they don't even know
+                how to access these datasets."
+              </p>
+              <span class="text-cyclamen text-xs mt-2 block">— Ashley Williams, WWPS</span>
+            </div>
+            <div class="callout-card">
+              <p class="text-white/90 text-sm leading-relaxed italic">
+                "So many different tech stacks, so many different methodologies, so many different
+                credentials and solutions and key vaults and you name it."
+              </p>
+              <span class="text-cyclamen text-xs mt-2 block">— Nick Dini, WWPS</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tech stack visual -->
+        <div class="p-8 rounded-2xl bg-white/[0.03] border border-lavender/10">
+          <h4 class="text-white font-semibold mb-6 text-center">The Technology Landscape</h4>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="text-center space-y-1">
+              <div class="text-cyclamen font-mono text-sm">Legacy</div>
+              <div class="text-white/80 text-sm">SQL Server</div>
+              <div class="text-white/80 text-sm">SSIS / SSRS / SSAS</div>
+              <div class="text-white/80 text-sm">DTS</div>
+              <div class="text-white/80 text-sm">PBIRS</div>
+              <div class="text-white/80 text-sm">Teradata</div>
+            </div>
+            <div class="text-center space-y-1">
+              <div class="text-cyclamen font-mono text-sm">Current</div>
+              <div class="text-white/80 text-sm">Azure Data Factory</div>
+              <div class="text-white/80 text-sm">Power BI Cloud</div>
+              <div class="text-white/80 text-sm">SQL / T-SQL</div>
+              <div class="text-white/80 text-sm">Smartsheet</div>
+            </div>
+            <div class="text-center space-y-1">
+              <div class="text-cyclamen font-mono text-sm">Target</div>
+              <div class="text-white/80 text-sm">Microsoft Fabric</div>
+              <div class="text-white/80 text-sm">Azure Data Lake</div>
+              <div class="text-white/80 text-sm">Power BI</div>
+              <div class="text-white/80 text-sm">Data Governance</div>
+            </div>
+            <div class="text-center space-y-1">
+              <div class="text-cyclamen font-mono text-sm">Approach</div>
+              <div class="text-white/80 text-sm">Reverse Engineering</div>
+              <div class="text-white/80 text-sm">Data Mapping</div>
+              <div class="text-white/80 text-sm">Stored Procedures</div>
+              <div class="text-white/80 text-sm">Semantic Models</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== FULL-WIDTH IMAGE BREAK 2 ====== -->
+    <div class="relative h-64 md:h-96 overflow-hidden">
+      <img src="/img/AdobeStock_477534477.jpg" alt="Silicon wafer close-up" class="w-full h-full object-cover" />
+      <div class="absolute inset-0 bg-gradient-to-l from-oxford-blue/80 to-oxford-blue/40" />
+      <div class="absolute inset-0 flex items-center justify-end px-6 md:px-16">
+        <blockquote class="max-w-xl text-right">
+          <p class="text-xl md:text-2xl text-white font-light leading-relaxed italic">
+            "It's all Microsoft tech stack, but different solutions throughout it. And then different
+            eras of Microsoft tech stack still being deployed."
+          </p>
+          <cite class="block mt-4 text-cyclamen text-sm not-italic">— Nick Dini, WWPS</cite>
+        </blockquote>
+      </div>
+    </div>
+
+    <!-- ====== THE PROGRAMME ====== -->
+    <section class="border-t border-lavender/10">
+      <div class="max-w-4xl mx-auto px-6 py-20">
+        <div class="flex items-center gap-3 mb-10">
+          <div class="w-1 h-8 bg-cyclamen rounded-full" />
+          <h2 class="text-sm font-semibold text-cyclamen uppercase tracking-widest">The Programme</h2>
+        </div>
+
+        <h3 class="text-2xl md:text-3xl font-bold text-white leading-snug mb-12">
+          Two phases. A stabilisation sprint followed by a multi-year modernisation journey.
+        </h3>
+
+        <div class="space-y-8">
+          <!-- Phase 1 -->
+          <div class="relative pl-8 border-l-2 border-cyclamen/40">
+            <div class="absolute left-0 top-0 w-4 h-4 -translate-x-[9px] rounded-full bg-cyclamen" />
+            <div class="mb-2">
+              <span class="text-cyclamen font-mono text-sm">Phase 1</span>
+              <span class="text-lavender/40 text-sm ml-3">0–6 months</span>
+            </div>
+            <h4 class="text-xl font-bold text-white mb-3">Stabilisation</h4>
+            <ul class="space-y-2 text-lavender/70">
+              <li class="flex items-start gap-2"><span class="text-cyclamen mt-1">→</span> Inherit everything. Understand connections across all business units.</li>
+              <li class="flex items-start gap-2"><span class="text-cyclamen mt-1">→</span> Audit what's being used. Identify duplicates. Turn off the dead reports.</li>
+              <li class="flex items-start gap-2"><span class="text-cyclamen mt-1">→</span> Fix active bugs — reports down, data flows broken, critical paths blocked.</li>
+              <li class="flex items-start gap-2"><span class="text-cyclamen mt-1">→</span> Integrate with business units. Learn their players and data models.</li>
+            </ul>
+          </div>
+
+          <!-- Phase 2 -->
+          <div class="relative pl-8 border-l-2 border-lavender/20">
+            <div class="absolute left-0 top-0 w-4 h-4 -translate-x-[9px] rounded-full bg-lavender/40" />
+            <div class="mb-2">
+              <span class="text-lavender/60 font-mono text-sm">Phase 2</span>
+              <span class="text-lavender/40 text-sm ml-3">6–18+ months</span>
+            </div>
+            <h4 class="text-xl font-bold text-white mb-3">Standardisation & Modernisation</h4>
+            <ul class="space-y-2 text-lavender/70">
+              <li class="flex items-start gap-2"><span class="text-lavender/50 mt-1">→</span> Consolidate into standardised enterprise data models.</li>
+              <li class="flex items-start gap-2"><span class="text-lavender/50 mt-1">→</span> Migrate legacy stacks into modern Azure and Fabric platforms.</li>
+              <li class="flex items-start gap-2"><span class="text-lavender/50 mt-1">→</span> Reduce duplication. Build a governed, self-service data culture.</li>
+              <li class="flex items-start gap-2"><span class="text-lavender/50 mt-1">→</span> Target: 25% central reports, 75% self-service. Microsoft Fabric as the endgame.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout-card mt-10">
+          <p class="text-white/90 text-sm leading-relaxed italic">
+            "Our 6-month goal is bring in capacity, expand the team, and get control of the backlog."
+          </p>
+          <span class="text-cyclamen text-xs mt-2 block">— Nick Dini, WWPS</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== WHY SOUTH AFRICA ====== -->
+    <section class="border-t border-lavender/10 bg-white/[0.02]">
+      <div class="max-w-4xl mx-auto px-6 py-20">
+        <div class="flex items-center gap-3 mb-10">
+          <div class="w-1 h-8 bg-cyclamen rounded-full" />
+          <h2 class="text-sm font-semibold text-cyclamen uppercase tracking-widest">Why South Africa</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-10 items-center">
+          <div class="md:col-span-3 space-y-6">
+            <h3 class="text-2xl md:text-3xl font-bold text-white leading-snug">
+              Follow the sun. Not just the cost.
+            </h3>
+            <p class="text-lavender/70 leading-relaxed">
+              South Africa sits between the US and Asia in a "follow the sun" delivery model.
+              Same timezone as Ireland, one of the client's major hubs. The strategic position
+              is what drew WWPS to SA. The cost advantage is real, but it's not the story.
+            </p>
+            <p class="text-lavender/70 leading-relaxed">
+              The long-term vision is a physical office in Cape Town, growing beyond this engagement
+              into a permanent offshore capability.
+            </p>
+            <div class="callout-card">
+              <p class="text-white/90 text-sm leading-relaxed italic">
+                "What actually interests us about South Africa... is you're somewhat in the middle
+                of our two biggest standing clients."
+              </p>
+              <span class="text-cyclamen text-xs mt-2 block">— Nick Dini, WWPS</span>
+            </div>
+          </div>
+          <div class="md:col-span-2">
+            <img
+              src="/img/AdobeStock_1813528849.jpg"
+              alt="Global semiconductor operations"
+              class="rounded-2xl w-full object-cover shadow-2xl"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== THE TEAM ====== -->
+    <section class="border-t border-lavender/10">
+      <div class="max-w-4xl mx-auto px-6 py-20">
+        <div class="flex items-center gap-3 mb-10">
+          <div class="w-1 h-8 bg-cyclamen rounded-full" />
+          <h2 class="text-sm font-semibold text-cyclamen uppercase tracking-widest">The Team</h2>
+        </div>
+
+        <h3 class="text-2xl md:text-3xl font-bold text-white leading-snug mb-4">
+          Eight engineers. Four specialist roles.
+        </h3>
+        <p class="text-lavender/70 leading-relaxed mb-10 max-w-2xl">
+          We're recruiting a senior-weighted team of eight data engineers to embed directly
+          with the WWPS analytics practice. Fully remote from South Africa, overlapping with
+          US Eastern Time.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+          <div class="p-5 rounded-xl bg-white/[0.03] border border-lavender/10">
+            <div class="text-white font-semibold">Senior Data Engineer</div>
+            <div class="text-lavender/50 text-sm">9 – 13 years experience</div>
+          </div>
+          <div class="p-5 rounded-xl bg-white/[0.03] border border-lavender/10">
+            <div class="text-white font-semibold">Mid-Level Data Engineer</div>
+            <div class="text-lavender/50 text-sm">5 – 8 years experience</div>
+          </div>
+          <div class="p-5 rounded-xl bg-white/[0.03] border border-lavender/10">
+            <div class="text-white font-semibold">Senior SQL Database Engineer</div>
+            <div class="text-lavender/50 text-sm">8 – 12 years experience</div>
+          </div>
+          <div class="p-5 rounded-xl bg-white/[0.03] border border-lavender/10">
+            <div class="text-white font-semibold">Senior BI Developer</div>
+            <div class="text-lavender/50 text-sm">8 – 11 years experience</div>
+          </div>
+        </div>
+
+        <div class="callout-card">
+          <p class="text-white/90 text-sm leading-relaxed italic">
+            "I want to start a team of 8 or 10 right off the bat down there... and then grow from there."
+          </p>
+          <span class="text-cyclamen text-xs mt-2 block">— Nick Dini, WWPS</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== WHAT THEY WANT ====== -->
+    <section class="border-t border-lavender/10 bg-white/[0.02]">
+      <div class="max-w-4xl mx-auto px-6 py-20">
+        <div class="flex items-center gap-3 mb-10">
+          <div class="w-1 h-8 bg-cyclamen rounded-full" />
+          <h2 class="text-sm font-semibold text-cyclamen uppercase tracking-widest">What We're Looking For</h2>
+        </div>
+
+        <div class="space-y-6">
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-lg bg-cyclamen/10 border border-cyclamen/20 flex items-center justify-center flex-shrink-0 mt-1">
+              <span class="text-cyclamen text-lg">⚡</span>
+            </div>
+            <div>
+              <h4 class="text-white font-semibold mb-1">Problem solvers who enjoy reverse engineering</h4>
+              <p class="text-lavender/60 text-sm leading-relaxed">
+                You'll inherit systems built by people who are no longer there. You need to figure out
+                how things work, not just follow instructions.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-lg bg-cyclamen/10 border border-cyclamen/20 flex items-center justify-center flex-shrink-0 mt-1">
+              <span class="text-cyclamen text-lg">🧭</span>
+            </div>
+            <div>
+              <h4 class="text-white font-semibold mb-1">Self-performers who can be embedded with a business unit</h4>
+              <p class="text-lavender/60 text-sm leading-relaxed">
+                You'll own a relationship with a specific business unit. Learn their players,
+                their data models, their language. Operate independently.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-lg bg-cyclamen/10 border border-cyclamen/20 flex items-center justify-center flex-shrink-0 mt-1">
+              <span class="text-cyclamen text-lg">🔬</span>
+            </div>
+            <div>
+              <h4 class="text-white font-semibold mb-1">Legacy experience valued, not penalised</h4>
+              <p class="text-lavender/60 text-sm leading-relaxed">
+                SSIS, SSRS, stored procedures, DTS — if you know this world, you're ahead.
+                You'll be working across eras of Microsoft technology, then helping migrate
+                into modern Azure and Fabric.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-lg bg-cyclamen/10 border border-cyclamen/20 flex items-center justify-center flex-shrink-0 mt-1">
+              <span class="text-cyclamen text-lg">🚀</span>
+            </div>
+            <div>
+              <h4 class="text-white font-semibold mb-1">Growth-hungry people who want to learn</h4>
+              <p class="text-lavender/60 text-sm leading-relaxed">
+                Microsoft Fabric is the endgame. This technology barely exists in the market yet.
+                You'll be early to the skill set that will define the next decade of data engineering.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-lg bg-cyclamen/10 border border-cyclamen/20 flex items-center justify-center flex-shrink-0 mt-1">
+              <span class="text-cyclamen text-lg">🌍</span>
+            </div>
+            <div>
+              <h4 class="text-white font-semibold mb-1">Fully remote, long-term, USD-linked</h4>
+              <p class="text-lavender/60 text-sm leading-relaxed">
+                18-month initial term with automatic renewal. Competitive packages. South Africa
+                based, overlapping US Eastern Time hours. Optional co-working or office provision.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== IMAGE BREAK 3 ====== -->
+    <div class="relative h-64 md:h-80 overflow-hidden">
+      <img src="/img/AdobeStock_260280571.jpg" alt="Circuit board macro" class="w-full h-full object-cover" />
+      <div class="absolute inset-0 bg-gradient-to-t from-oxford-blue via-oxford-blue/60 to-transparent" />
+    </div>
+
+    <!-- ====== CTA ====== -->
+    <section class="border-t border-lavender/10">
+      <div class="max-w-3xl mx-auto px-6 py-20 text-center space-y-8">
+        <h2 class="text-3xl md:text-4xl font-bold text-white leading-tight">
+          This is not a job posting.<br />
+          <span class="gradient-text">This is a build.</span>
+        </h2>
+        <p class="text-lavender/70 leading-relaxed max-w-xl mx-auto">
+          An eight-person offshore team. A 15-year client relationship. A multi-year programme
+          to modernise 20 years of semiconductor data infrastructure. Starting now.
+        </p>
+        <div class="pt-4">
+          <router-link to="/screen" class="btn-primary text-lg px-10 py-4 rounded-xl inline-block">
+            Start Your Application
+          </router-link>
+        </div>
+        <p class="text-lavender/40 text-sm">
+          Truffle has been placing analytics and engineering talent for 15+ years.
+        </p>
       </div>
     </section>
 
     <!-- Footer -->
     <footer class="px-6 py-8 border-t border-lavender/10 text-center">
-      <p class="text-lavender/40 text-sm">© {{ new Date().getFullYear() }} Truffle. All rights reserved.</p>
+      <p class="text-lavender/40 text-sm">&copy; {{ new Date().getFullYear() }} Truffle. All rights reserved.</p>
     </footer>
   </div>
 </template>
