@@ -230,6 +230,17 @@ app.get('/api/whoami', requireAdmin, (_req, res) => {
   res.json({ authenticated: true })
 })
 
+// Admin: delete submission by ID
+app.delete('/api/submissions/:id', requireAdmin, async (req, res) => {
+  if (!pool) return res.status(500).json({ error: 'No database' })
+  try {
+    await pool.query('DELETE FROM submissions WHERE id = $1', [req.params.id])
+    res.json({ success: true })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 // SPA fallback — serve index.html for all non-API routes in production
 if (process.env.NODE_ENV === 'production') {
   app.get('*', (_req, res) => {
