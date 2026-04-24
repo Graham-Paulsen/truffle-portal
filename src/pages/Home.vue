@@ -29,7 +29,7 @@
     <header class="relative overflow-hidden">
       <div class="absolute inset-0">
         <img src="/img/AdobeStock_482999310.jpg" alt="Semiconductor wafer" class="w-full h-full object-cover opacity-35" />
-        <div class="absolute inset-0 bg-gradient-to-b from-oxford-blue/60 via-oxford-blue/80 to-oxford-blue" />
+        <div class="absolute inset-0 bg-gradient-to-b from-oxford-blue/75 via-oxford-blue/95 to-oxford-blue" />
       </div>
       <div class="relative max-w-4xl mx-auto px-6 py-24 md:py-32 text-center space-y-8">
         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyclamen/30 bg-cyclamen/10 text-cyclamen text-sm font-medium">
@@ -310,20 +310,21 @@
             </ul>
           </div>
 
-          <!-- Phase 2 -->
-          <div class="relative pl-8 border-l-2 border-lavender/20">
-            <div class="absolute left-0 top-0 w-4 h-4 -translate-x-[9px] rounded-full bg-lavender/40" />
+          <!-- Phase 2 — gradient glow -->
+          <div class="relative pl-8">
+            <div class="absolute left-0 top-0 bottom-0 w-0.5 -translate-x-px bg-gradient-to-b from-cyclamen to-veronica rounded-full" />
+            <div class="absolute left-0 top-0 w-4 h-4 -translate-x-[9px] rounded-full bg-gradient-to-br from-cyclamen to-veronica" />
             <div class="mb-2">
-              <span class="text-lavender/60 font-mono text-sm">Phase 2</span>
+              <span class="bg-gradient-to-r from-cyclamen to-veronica bg-clip-text text-transparent font-mono text-sm font-semibold">Phase 2</span>
               <span class="text-lavender/40 text-sm ml-3">6–18+ months</span>
             </div>
             <h4 class="text-xl font-bold text-white mb-3">Standardisation & Modernisation</h4>
             <ul class="space-y-2 text-lavender/70">
-              <li class="flex items-start gap-2"><span class="text-lavender/50 mt-1">→</span> Consolidate into standardised enterprise data models.</li>
-              <li class="flex items-start gap-2"><span class="text-lavender/50 mt-1">→</span> Migrate legacy stacks into modern Azure and Fabric platforms.</li>
-              <li class="flex items-start gap-2"><span class="text-lavender/50 mt-1">→</span> Work with the BA team and client stakeholders to rationalise the reporting environment.</li>
-              <li class="flex items-start gap-2"><span class="text-lavender/50 mt-1">→</span> Reduce duplication. Build a governed, self-service data culture.</li>
-              <li class="flex items-start gap-2"><span class="text-lavender/50 mt-1">→</span> Target: 25% central reports, 75% self-service. Microsoft Fabric as the endgame.</li>
+              <li class="flex items-start gap-2"><span class="bg-gradient-to-r from-cyclamen to-veronica bg-clip-text text-transparent mt-1 font-bold">→</span> Consolidate into standardised enterprise data models.</li>
+              <li class="flex items-start gap-2"><span class="bg-gradient-to-r from-cyclamen to-veronica bg-clip-text text-transparent mt-1 font-bold">→</span> Migrate legacy stacks into modern Azure and Fabric platforms.</li>
+              <li class="flex items-start gap-2"><span class="bg-gradient-to-r from-cyclamen to-veronica bg-clip-text text-transparent mt-1 font-bold">→</span> Work with the BA team and client stakeholders to rationalise the reporting environment.</li>
+              <li class="flex items-start gap-2"><span class="bg-gradient-to-r from-cyclamen to-veronica bg-clip-text text-transparent mt-1 font-bold">→</span> Reduce duplication. Build a governed, self-service data culture.</li>
+              <li class="flex items-start gap-2"><span class="bg-gradient-to-r from-cyclamen to-veronica bg-clip-text text-transparent mt-1 font-bold">→</span> Target: 25% central reports, 75% self-service. Microsoft Fabric as the endgame.</li>
             </ul>
           </div>
         </div>
@@ -396,43 +397,68 @@
           US Eastern Time.
         </p>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
-          <div class="p-5 rounded-xl bg-white/[0.03] border border-lavender/10">
-            <div class="flex items-center gap-3">
-              <span class="text-3xl font-bold gradient-text">×2</span>
+        <!-- Master-detail: role selector + detail pane -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-12">
+
+          <!-- Left: stacked role cards -->
+          <div class="md:col-span-2 space-y-3">
+            <button
+              v-for="(role, idx) in roles"
+              :key="role.title"
+              @click="selectedRole = idx"
+              class="w-full text-left p-4 rounded-xl border transition-all duration-200"
+              :class="selectedRole === idx
+                ? 'bg-white/[0.06] border-cyclamen/40 shadow-lg shadow-cyclamen/5'
+                : 'bg-white/[0.03] border-lavender/10 hover:bg-white/[0.05] hover:border-lavender/20'"
+            >
+              <div class="flex items-center gap-3">
+                <span class="text-2xl font-bold gradient-text">×{{ role.qty }}</span>
+                <div>
+                  <div class="text-white font-semibold text-sm">{{ role.title }}</div>
+                  <div class="text-lavender/50 text-xs">{{ role.years }}</div>
+                </div>
+              </div>
+            </button>
+          </div>
+
+          <!-- Right: detail pane -->
+          <div class="md:col-span-3 p-6 rounded-xl bg-white/[0.03] border border-lavender/10">
+            <div class="mb-4">
+              <div class="flex items-center gap-3 mb-1">
+                <span class="text-xl font-bold gradient-text">×{{ roles[selectedRole].qty }}</span>
+                <h4 class="text-white font-semibold">{{ roles[selectedRole].title }}</h4>
+              </div>
+              <div class="text-lavender/50 text-xs">{{ roles[selectedRole].years }}</div>
+            </div>
+
+            <div class="space-y-5">
               <div>
-                <div class="text-white font-semibold">Senior Data Engineer</div>
-                <div class="text-lavender/50 text-sm">9 – 13 years experience</div>
+                <div class="text-cyclamen text-xs font-semibold uppercase tracking-wider mb-2">Primary Responsibilities</div>
+                <p class="text-lavender/70 text-sm leading-relaxed">{{ roles[selectedRole].responsibilities }}</p>
+              </div>
+              <div>
+                <div class="text-cyclamen text-xs font-semibold uppercase tracking-wider mb-2">Key Technologies</div>
+                <div class="flex flex-wrap gap-2">
+                  <span
+                    v-for="tech in roles[selectedRole].tech"
+                    :key="tech"
+                    class="px-2.5 py-1 rounded-md bg-gradient-to-r from-cyclamen/20 to-veronica/20 border border-cyclamen/10 text-lavender/80 text-xs"
+                  >{{ tech }}</span>
+                </div>
+              </div>
+              <div>
+                <div class="text-cyclamen text-xs font-semibold uppercase tracking-wider mb-2">Critical Skill Sets</div>
+                <div class="flex flex-wrap gap-2">
+                  <span
+                    v-for="skill in roles[selectedRole].skills"
+                    :key="skill"
+                    class="px-2.5 py-1 rounded-md bg-gradient-to-r from-cyclamen/30 to-veronica/30 border border-cyclamen/20 text-white/90 text-xs"
+                  >{{ skill }}</span>
+                </div>
               </div>
             </div>
           </div>
-          <div class="p-5 rounded-xl bg-white/[0.03] border border-lavender/10">
-            <div class="flex items-center gap-3">
-              <span class="text-3xl font-bold gradient-text">×4</span>
-              <div>
-                <div class="text-white font-semibold">Mid-Level Data Engineer</div>
-                <div class="text-lavender/50 text-sm">5 – 8 years experience</div>
-              </div>
-            </div>
-          </div>
-          <div class="p-5 rounded-xl bg-white/[0.03] border border-lavender/10">
-            <div class="flex items-center gap-3">
-              <span class="text-3xl font-bold gradient-text">×1</span>
-              <div>
-                <div class="text-white font-semibold">Senior SQL Database Engineer</div>
-                <div class="text-lavender/50 text-sm">8 – 12 years experience</div>
-              </div>
-            </div>
-          </div>
-          <div class="p-5 rounded-xl bg-white/[0.03] border border-lavender/10">
-            <div class="flex items-center gap-3">
-              <span class="text-3xl font-bold gradient-text">×1</span>
-              <div>
-                <div class="text-white font-semibold">Senior BI Developer</div>
-                <div class="text-lavender/50 text-sm">8 – 11 years experience</div>
-              </div>
-            </div>
-          </div>
+
         </div>
 
         <div class="callout-card">
@@ -454,8 +480,8 @@
 
         <div class="space-y-6">
           <div class="flex items-start gap-4">
-            <div class="w-10 h-10 rounded-lg bg-cyclamen/10 border border-cyclamen/20 flex items-center justify-center flex-shrink-0 mt-1">
-              <span class="text-cyclamen text-lg">🧩</span>
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyclamen to-veronica flex items-center justify-center flex-shrink-0 mt-1">
+              <IconPuzzle class="w-5 h-5 text-white" />
             </div>
             <div>
               <h4 class="text-white font-semibold mb-1">Problem solvers who enjoy reverse engineering</h4>
@@ -467,8 +493,8 @@
           </div>
 
           <div class="flex items-start gap-4">
-            <div class="w-10 h-10 rounded-lg bg-cyclamen/10 border border-cyclamen/20 flex items-center justify-center flex-shrink-0 mt-1">
-              <span class="text-cyclamen text-lg">🧭</span>
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyclamen to-veronica flex items-center justify-center flex-shrink-0 mt-1">
+              <IconCompass class="w-5 h-5 text-white" />
             </div>
             <div>
               <h4 class="text-white font-semibold mb-1">Self-performers who can be embedded with a business unit</h4>
@@ -481,8 +507,8 @@
           </div>
 
           <div class="flex items-start gap-4">
-            <div class="w-10 h-10 rounded-lg bg-cyclamen/10 border border-cyclamen/20 flex items-center justify-center flex-shrink-0 mt-1">
-              <span class="text-cyclamen text-lg">🦖</span>
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyclamen to-veronica flex items-center justify-center flex-shrink-0 mt-1">
+              <IconDatabase class="w-5 h-5 text-white" />
             </div>
             <div>
               <h4 class="text-white font-semibold mb-1">Legacy experience valued, not penalised</h4>
@@ -495,8 +521,8 @@
           </div>
 
           <div class="flex items-start gap-4">
-            <div class="w-10 h-10 rounded-lg bg-cyclamen/10 border border-cyclamen/20 flex items-center justify-center flex-shrink-0 mt-1">
-              <span class="text-cyclamen text-lg">🚀</span>
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyclamen to-veronica flex items-center justify-center flex-shrink-0 mt-1">
+              <IconRocket class="w-5 h-5 text-white" />
             </div>
             <div>
               <h4 class="text-white font-semibold mb-1">Growth-hungry people who want to learn</h4>
@@ -509,8 +535,8 @@
           </div>
 
           <div class="flex items-start gap-4">
-            <div class="w-10 h-10 rounded-lg bg-cyclamen/10 border border-cyclamen/20 flex items-center justify-center flex-shrink-0 mt-1">
-              <span class="text-cyclamen text-lg">🌍</span>
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyclamen to-veronica flex items-center justify-center flex-shrink-0 mt-1">
+              <IconGlobe class="w-5 h-5 text-white" />
             </div>
             <div>
               <h4 class="text-white font-semibold mb-1">Fully remote, long-term view</h4>
@@ -639,5 +665,48 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import TruffleLogo from '../components/TruffleLogo.vue'
+import { IconPuzzle, IconCompass, IconDatabase, IconRocket, IconGlobe } from '@tabler/icons-vue'
+
+const selectedRole = ref(0)
+
+const roles = [
+  {
+    qty: 4,
+    title: 'Data Engineer',
+    level: 'Mid',
+    years: '5 – 8 years experience',
+    responsibilities: 'Maintain and fix ETL and data flows. Debug existing SSIS packages and stored procedures. Trace data lineage across legacy warehouses. Support the senior engineers on pipeline modernisation tasks.',
+    tech: ['SSIS', 'SSAS', 'SQL Server', 'Excel', 'Access', 'ADF', 'GitHub'],
+    skills: ['Debugging', 'Reverse engineering', 'Data tracing']
+  },
+  {
+    qty: 2,
+    title: 'Senior Data Engineer',
+    level: 'Senior',
+    years: '9 – 13 years experience',
+    responsibilities: 'Own data pipelines end to end. Lead modernisation from legacy SSIS to Azure Data Factory. Design and build new Fabric-based pipelines. Mentor mid-level engineers and set technical standards.',
+    tech: ['SSIS', 'ADF', 'SQL Server', 'Azure SQL', 'SSAS', 'Microsoft Fabric'],
+    skills: ['System design', 'Root cause analysis', 'Refactoring']
+  },
+  {
+    qty: 1,
+    title: 'Senior SQL Database Engineer',
+    level: 'Senior',
+    years: '8 – 12 years experience',
+    responsibilities: 'Own database performance and data integrity across the estate. Tune complex queries, design indexing strategies, and manage schema evolution. Bridge on-prem SQL Server to cloud targets like Snowflake and Azure SQL.',
+    tech: ['SQL Server', 'Indexing', 'Query Tuning', 'Snowflake', 'SAP HANA', 'APIs'],
+    skills: ['Performance tuning', 'Data modelling', 'Troubleshooting']
+  },
+  {
+    qty: 1,
+    title: 'Senior BI Developer',
+    level: 'Senior',
+    years: '8 – 11 years experience',
+    responsibilities: 'Own BI architecture and report standardisation. Rebuild legacy SSRS and Power BI reports on modern Fabric/Power BI stack. Translate business requirements into data models. Act as the primary BI liaison with client stakeholders.',
+    tech: ['Power BI', 'Power Query', 'SSAS Tabular', 'DAX', 'SQL', 'Microsoft Fabric'],
+    skills: ['Data modelling', 'Performance tuning', 'Requirements translation', 'Client communication']
+  }
+]
 </script>
