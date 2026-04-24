@@ -16,7 +16,7 @@
         <a href="#evp" class="hover:text-lavender transition-colors">Benefits</a>
       </div>
       <div class="flex items-center gap-6">
-        <router-link to="/screen" class="text-cyclamen hover:text-cyclamen/80 text-sm font-medium transition-colors">
+        <router-link to="/screen" class="bg-gradient-to-r from-cyclamen to-veronica text-white text-sm font-medium px-4 py-1.5 rounded-lg transition-opacity hover:opacity-90">
           Join Now
         </router-link>
         <router-link to="/admin" class="text-lavender/40 hover:text-lavender/60 text-xs transition-colors hidden md:inline">
