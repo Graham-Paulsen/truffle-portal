@@ -423,13 +423,6 @@
 
           <!-- Right: detail pane -->
           <div class="md:col-span-3 p-6 rounded-xl bg-white/[0.03] border border-lavender/10">
-            <div class="mb-4">
-              <div class="flex items-center gap-3 mb-1">
-                <span class="text-xl font-bold gradient-text">×{{ roles[selectedRole].qty }}</span>
-                <h4 class="text-white font-semibold">{{ roles[selectedRole].title }}</h4>
-              </div>
-              <div class="text-lavender/50 text-xs">{{ roles[selectedRole].years }}</div>
-            </div>
 
             <div class="space-y-5">
               <div>
@@ -442,7 +435,7 @@
                   <span
                     v-for="tech in roles[selectedRole].tech"
                     :key="tech"
-                    class="px-2.5 py-1 rounded-md bg-gradient-to-r from-cyclamen/20 to-veronica/20 border border-cyclamen/10 text-lavender/80 text-xs"
+                    class="px-2.5 py-1 rounded-md bg-gradient-to-r from-cyclamen to-veronica text-white text-xs font-medium"
                   >{{ tech }}</span>
                 </div>
               </div>
@@ -452,7 +445,7 @@
                   <span
                     v-for="skill in roles[selectedRole].skills"
                     :key="skill"
-                    class="px-2.5 py-1 rounded-md bg-gradient-to-r from-cyclamen/30 to-veronica/30 border border-cyclamen/20 text-white/90 text-xs"
+                    class="px-2.5 py-1 rounded-md bg-gradient-to-r from-cyclamen to-veronica text-white text-xs font-medium"
                   >{{ skill }}</span>
                 </div>
               </div>
