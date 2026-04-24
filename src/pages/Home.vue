@@ -29,7 +29,7 @@
     <header class="relative overflow-hidden">
       <div class="absolute inset-0">
         <img src="/img/AdobeStock_482999310.jpg" alt="Semiconductor wafer" class="w-full h-full object-cover opacity-35" />
-        <div class="absolute inset-0 bg-gradient-to-b from-oxford-blue/75 via-oxford-blue/95 to-oxford-blue" />
+        <div class="absolute inset-0 bg-gradient-to-b from-oxford-blue/30 via-oxford-blue/50 to-oxford-blue" />
       </div>
       <div class="relative max-w-4xl mx-auto px-6 py-24 md:py-32 text-center space-y-8">
         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyclamen/30 bg-cyclamen/10 text-cyclamen text-sm font-medium">
@@ -370,7 +370,7 @@
           </div>
           <div class="relative min-h-[400px] md:min-h-0">
             <img
-              src="/img/file_402.jpg"
+              src="/img/file_403.jpg"
               alt="Cape Town cityscape with Table Mountain"
               class="w-full h-full object-cover"
             />
