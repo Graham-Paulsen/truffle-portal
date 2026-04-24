@@ -29,7 +29,7 @@
     <header class="relative overflow-hidden">
       <div class="absolute inset-0">
         <img src="/img/AdobeStock_482999310.jpg" alt="Semiconductor wafer" class="w-full h-full object-cover opacity-35" />
-        <div class="absolute inset-0 bg-gradient-to-b from-oxford-blue/30 via-oxford-blue/50 to-oxford-blue" />
+        <div class="absolute inset-0 bg-gradient-to-b from-oxford-blue/20 via-oxford-blue/40 to-oxford-blue" />
       </div>
       <div class="relative max-w-4xl mx-auto px-6 py-24 md:py-32 text-center space-y-8">
         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyclamen/30 bg-cyclamen/10 text-cyclamen text-sm font-medium">
@@ -468,7 +468,7 @@
       <div class="max-w-4xl mx-auto px-6 py-20">
         <div class="flex items-center gap-3 mb-10">
           <div class="w-1 h-8 bg-cyclamen rounded-full" />
-          <h2 class="text-sm font-semibold text-cyclamen uppercase tracking-widest">Role Fit</h2>
+          <h2 class="text-sm font-semibold text-cyclamen uppercase tracking-widest">What We're Looking For</h2>
         </div>
 
         <div class="space-y-6">
