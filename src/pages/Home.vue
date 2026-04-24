@@ -2,17 +2,17 @@
   <div class="min-h-screen bg-oxford-blue flex flex-col">
 
     <!-- Nav -->
-    <nav class="flex items-center justify-between px-6 py-4 border-b border-lavender/10 sticky top-0 z-50 bg-oxford-blue/95 backdrop-blur-sm">
+    <nav class="flex items-center justify-between px-6 py-5 border-b border-lavender/10 sticky top-0 z-50 bg-oxford-blue/95 backdrop-blur-sm">
       <router-link to="/" class="flex items-center">
-        <TruffleLogo className="h-8 w-auto" />
+        <TruffleLogo className="h-10 w-auto" />
       </router-link>
-      <div class="hidden md:flex items-center gap-6 text-sm text-lavender/60">
+      <div class="hidden md:flex items-center gap-6 text-base text-lavender/60">
         <a href="#brief" class="hover:text-lavender transition-colors">The Brief</a>
         <a href="#industry" class="hover:text-lavender transition-colors">Industry</a>
         <a href="#challenge" class="hover:text-lavender transition-colors">The Challenge</a>
         <a href="#program" class="hover:text-lavender transition-colors">Program</a>
         <a href="#team" class="hover:text-lavender transition-colors">Team</a>
-        <a href="#looking" class="hover:text-lavender transition-colors">Looking For</a>
+        <a href="#looking" class="hover:text-lavender transition-colors">Role Fit</a>
         <a href="#evp" class="hover:text-lavender transition-colors">Benefits</a>
       </div>
       <div class="flex items-center gap-6">
@@ -475,7 +475,7 @@
       <div class="max-w-4xl mx-auto px-6 py-20">
         <div class="flex items-center gap-3 mb-10">
           <div class="w-1 h-8 bg-cyclamen rounded-full" />
-          <h2 class="text-sm font-semibold text-cyclamen uppercase tracking-widest">What We're Looking For</h2>
+          <h2 class="text-sm font-semibold text-cyclamen uppercase tracking-widest">Role Fit</h2>
         </div>
 
         <div class="space-y-6">
