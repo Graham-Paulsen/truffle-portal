@@ -16,62 +16,92 @@
 
     <!-- Progress -->
     <div class="px-6 pt-6 max-w-xl mx-auto w-full">
-      <StepProgress :current-step="currentStep" :total-steps="5" />
+      <StepProgress :current-step="currentStep" :total-steps="8" />
     </div>
 
     <!-- Form area -->
     <div class="flex-1 flex flex-col justify-center px-6 py-8">
       <div class="max-w-xl mx-auto w-full relative" style="min-height: 320px;">
         <Transition :name="transitionName">
-          <div :key="currentStep" class="absolute inset-0">
-            <!-- Step 1: Timezone -->
-            <QuestionStep
+          <div :key="currentStep" class="absolute inset-0 overflow-y-auto pr-1">
+            <!-- Step 1: Recruitment Preference -->
+            <Step1Recruitment
               v-if="currentStep === 1"
-              question="Are you able to work hours that overlap with US Eastern Time (UTC-5)? We need a minimum 5-hour overlap with the US team."
-              :options="timezoneOptions"
+              :model-preference="answers.recruitment_preference"
+              :model-reason="answers.recruitment_reason"
+              :reason-error="reasonError"
+              @update:preference="answers.recruitment_preference = $event"
+              @update:reason="answers.recruitment_reason = $event"
+            />
+
+            <!-- Step 2: Preferred Opportunity -->
+            <Step2Opportunity
+              v-else-if="currentStep === 2"
+              :model-roles="answers.preferred_roles"
+              :model-tech="answers.tech_stack"
+              @update:roles="answers.preferred_roles = $event"
+              @update:tech="answers.tech_stack = $event"
+            />
+
+            <!-- Step 3: Right to Work & EE -->
+            <Step3RightToWork
+              v-else-if="currentStep === 3"
+              :model-status="answers.ee_status"
+              :model-id-number="answers.id_number"
+              :model-disabled="answers.disabled"
+              @update:status="answers.ee_status = $event"
+              @update:id-number="answers.id_number = $event"
+              @update:disabled="answers.disabled = $event"
+            />
+
+            <!-- Step 4: Location & Work Arrangement -->
+            <Step4Location
+              v-else-if="currentStep === 4"
+              :model-residence="answers.residence"
+              :model-remote="answers.remote_willing"
+              :model-hybrid="answers.hybrid_willing"
+              @update:residence="answers.residence = $event"
+              @update:remote="answers.remote_willing = $event"
+              @update:hybrid="answers.hybrid_willing = $event"
+            />
+
+            <!-- Step 5: Timezone Overlap -->
+            <Step5Timezone
+              v-else-if="currentStep === 5"
               :model-value="answers.timezone_overlap"
               @update:model-value="answers.timezone_overlap = $event"
             />
 
-            <!-- Step 2: Remote work -->
-            <QuestionStep
-              v-else-if="currentStep === 2"
-              question="This role is fully remote. Are you comfortable working entirely remotely?"
-              :options="remoteOptions"
-              :model-value="answers.remote_work"
-              @update:model-value="answers.remote_work = $event"
+            <!-- Step 6: Contract Terms -->
+            <Step6Contract
+              v-else-if="currentStep === 6"
+              :model-value="answers.contract_terms"
+              @update:model-value="answers.contract_terms = $event"
             />
 
-            <!-- Step 3: Notice period -->
-            <QuestionStep
-              v-else-if="currentStep === 3"
-              question="What is your current notice period or earliest possible start date?"
-              :options="noticeOptions"
-              :model-value="answers.notice_period"
-              @update:model-value="answers.notice_period = $event"
+            <!-- Step 7: Notice Period -->
+            <Step7Notice
+              v-else-if="currentStep === 7"
+              :model-notice="answers.notice_period"
+              :model-considerations="answers.notice_considerations"
+              @update:notice="answers.notice_period = $event"
+              @update:considerations="answers.notice_considerations = $event"
             />
 
-            <!-- Step 4: CTC -->
-            <QuestionStep
-              v-else-if="currentStep === 4"
-              question="What is your current monthly cost-to-company (CTC) in ZAR?"
-              type="number"
-              :numeric-value="answers.ctc_zar"
-              :validation-error="ctcError"
-              @update:numeric-value="onCtcChange"
-            />
-
-            <!-- Step 5: Availability -->
-            <QuestionStep
-              v-else-if="currentStep === 5"
-              question="Is there anything that would prevent you from accepting an offer in the next 4–6 weeks?"
-              :options="availabilityOptions"
-              :model-value="answers.availability_issue"
-              :show-textarea="answers.availability_issue === 'yes'"
-              :textarea-value="answers.availability_note"
-              :textarea-error="noteError"
-              @update:model-value="answers.availability_issue = $event"
-              @update:textarea-value="answers.availability_note = $event"
+            <!-- Step 8: Compensation & Benefits -->
+            <Step8Compensation
+              v-else-if="currentStep === 8"
+              :model-current-ctc="answers.current_ctc"
+              :model-bonus="answers.previous_bonus"
+              :model-repayable="answers.repayable_on_leaving"
+              :model-leave-days="answers.annual_leave_days"
+              :model-expected-ctc="answers.expected_ctc"
+              :ctc-error="ctcError"
+              @update:current-ctc="onCtcChange"
+              @update:bonus="answers.previous_bonus = $event"
+              @update:repayable="answers.repayable_on_leaving = $event"
+              @update:leave-days="answers.annual_leave_days = $event"
+              @update:expected-ctc="answers.expected_ctc = $event"
             />
           </div>
         </Transition>
@@ -95,7 +125,7 @@
           :disabled="!canProceed"
           @click="goNext"
         >
-          {{ currentStep === 5 ? 'See My Results →' : 'Next →' }}
+          {{ currentStep === 8 ? 'See My Results →' : 'Next →' }}
         </button>
       </div>
     </div>
@@ -107,32 +137,60 @@ import { ref, computed, reactive, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import TruffleLogo from '../components/TruffleLogo.vue'
 import StepProgress from '../components/StepProgress.vue'
-import QuestionStep from '../components/QuestionStep.vue'
+import Step1Recruitment from '../components/ScreenSteps/Step1Recruitment.vue'
+import Step2Opportunity from '../components/ScreenSteps/Step2Opportunity.vue'
+import Step3RightToWork from '../components/ScreenSteps/Step3RightToWork.vue'
+import Step4Location from '../components/ScreenSteps/Step4Location.vue'
+import Step5Timezone from '../components/ScreenSteps/Step5Timezone.vue'
+import Step6Contract from '../components/ScreenSteps/Step6Contract.vue'
+import Step7Notice from '../components/ScreenSteps/Step7Notice.vue'
+import Step8Compensation from '../components/ScreenSteps/Step8Compensation.vue'
 
 const router = useRouter()
 
 const currentStep = ref(1)
 const transitionName = ref('slide-left')
 const ctcError = ref('')
-const noteError = ref('')
+const reasonError = ref('')
 const restoredFromStorage = ref(false)
 
 const answers = reactive({
+  // Step 1
+  recruitment_preference: '' as string,
+  recruitment_reason: '' as string,
+  // Step 2
+  preferred_roles: [] as string[],
+  tech_stack: [] as string[],
+  // Step 3
+  ee_status: '' as string,
+  id_number: '' as string,
+  disabled: false as boolean,
+  // Step 4
+  residence: '' as string,
+  remote_willing: '' as string,
+  hybrid_willing: '' as string,
+  // Step 5
   timezone_overlap: '' as string,
-  remote_work: '' as string,
+  // Step 6
+  contract_terms: '' as string,
+  // Step 7
   notice_period: '' as string,
-  ctc_zar: null as number | null,
-  availability_issue: '' as string,
-  availability_note: '' as string,
+  notice_considerations: '' as string,
+  // Step 8
+  current_ctc: null as number | null,
+  previous_bonus: null as number | null,
+  repayable_on_leaving: '' as string,
+  annual_leave_days: 0 as number,
+  expected_ctc: null as number | null,
 })
 
 onMounted(() => {
-  const saved = localStorage.getItem('truffle_portal_form')
+  const saved = localStorage.getItem('truffle_portal_form_v2')
   if (saved) {
     try {
       const state = JSON.parse(saved)
       if (state.answers) Object.assign(answers, state.answers)
-      if (state.currentStep && state.currentStep >= 1 && state.currentStep <= 5) {
+      if (state.currentStep && state.currentStep >= 1 && state.currentStep <= 8) {
         currentStep.value = state.currentStep
       }
       restoredFromStorage.value = true
@@ -143,7 +201,7 @@ onMounted(() => {
 watch(
   [currentStep, answers],
   () => {
-    localStorage.setItem('truffle_portal_form', JSON.stringify({
+    localStorage.setItem('truffle_portal_form_v2', JSON.stringify({
       answers: { ...answers },
       currentStep: currentStep.value,
     }))
@@ -151,47 +209,37 @@ watch(
   { deep: true }
 )
 
-const timezoneOptions = [
-  { label: 'Yes — I have at least 5 hours overlap', value: 'yes' },
-  { label: 'No — I cannot accommodate this', value: 'no' },
-]
-
-const remoteOptions = [
-  { label: 'Yes — fully remote is perfect', value: 'yes' },
-  { label: 'No — I prefer hybrid or on-site', value: 'no' },
-]
-
-const noticeOptions = [
-  { label: 'Immediate', value: 'immediate' },
-  { label: '2 weeks', value: '2weeks' },
-  { label: '1 month', value: '1month' },
-  { label: '2 months', value: '2months' },
-  { label: '3 months or longer', value: '3months+' },
-]
-
-const availabilityOptions = [
-  { label: 'No — I\'m ready to proceed', value: 'no' },
-  { label: 'Yes — see below', value: 'yes' },
-]
-
 const canProceed = computed(() => {
   switch (currentStep.value) {
-    case 1: return !!answers.timezone_overlap
-    case 2: return !!answers.remote_work
-    case 3: return !!answers.notice_period
-    case 4: return answers.ctc_zar != null && answers.ctc_zar > 0
-    case 5:
-      if (!answers.availability_issue) return false
-      if (answers.availability_issue === 'yes') return answers.availability_note.trim().length >= 10
+    case 1:
+      if (!answers.recruitment_preference) return false
+      if (answers.recruitment_preference !== 'not_looking' && answers.recruitment_reason.trim().length < 5) {
+        return false
+      }
       return true
-    default: return false
+    case 2:
+      return answers.preferred_roles.length > 0
+    case 3:
+      return !!answers.ee_status
+    case 4:
+      return answers.residence.trim().length > 0 && !!answers.remote_willing && !!answers.hybrid_willing
+    case 5:
+      return !!answers.timezone_overlap
+    case 6:
+      return !!answers.contract_terms
+    case 7:
+      return !!answers.notice_period
+    case 8:
+      return answers.current_ctc != null && answers.current_ctc >= 500000 && answers.current_ctc <= 1700000
+    default:
+      return false
   }
 })
 
 function onCtcChange(val: number | null) {
-  answers.ctc_zar = val
-  if (val != null && (val < 1 || val > 500000)) {
-    ctcError.value = 'Please enter an amount between R1 and R500,000'
+  answers.current_ctc = val
+  if (val != null && (val < 500000 || val > 1700000)) {
+    ctcError.value = 'Please enter an amount between R500,000 and R1,700,000'
   } else {
     ctcError.value = ''
   }
@@ -202,71 +250,59 @@ function goBack() {
   currentStep.value--
 }
 
-function goNext() {
-  if (!canProceed.value) return
-
-  if (currentStep.value === 4) {
-    const ctc = answers.ctc_zar
-    if (!ctc || ctc < 1 || ctc > 500000) {
-      ctcError.value = 'Please enter an amount between R1 and R500,000'
-      return
-    }
-    ctcError.value = ''
-  }
-
-  if (currentStep.value === 5) {
-    if (answers.availability_issue === 'yes' && answers.availability_note.trim().length < 10) {
-      noteError.value = 'Please provide at least 10 characters of explanation'
-      return
-    }
-    noteError.value = ''
-    const result = calculateScore()
-    sessionStorage.setItem('screening_result', JSON.stringify({
-      answers: { ...answers },
-      score: result.score,
-      fitLevel: result.fitLevel,
-    }))
-    localStorage.removeItem('truffle_portal_form')
-    router.push('/complete')
-    return
-  }
-
-  transitionName.value = 'slide-left'
-  currentStep.value++
-}
-
 type FitLevel = 'strong' | 'possible' | 'under_review'
 
 function calculateScore(): { score: number; fitLevel: FitLevel } {
-  if (answers.timezone_overlap === 'no' || answers.remote_work === 'no') {
+  // Hard fails
+  if (answers.timezone_overlap === 'no' || answers.contract_terms === 'no') {
     return { score: 0, fitLevel: 'under_review' }
   }
 
   let score = 0
-  score += 30 // timezone yes
-  score += 20 // remote yes
 
-  if (['immediate', '2weeks', '1month'].includes(answers.notice_period)) {
-    score += 20
-  } else if (answers.notice_period === '2months') {
-    score += 15
-  } else {
-    score += 5
-  }
+  // Recruitment preference (10)
+  if (answers.recruitment_preference === 'actively_pursuing') score += 10
+  else if (answers.recruitment_preference === 'open_to_exceptional') score += 7
+  else score += 2
 
-  const ctc = answers.ctc_zar || 0
-  if (ctc >= 50000 && ctc <= 120000) {
-    score += 20
-  } else if (ctc > 120000 && ctc <= 160000) {
-    score += 10
-  }
+  // Role match — any selection counts (5)
+  if (answers.preferred_roles.length > 0) score += 5
 
-  if (answers.availability_issue === 'no') {
-    score += 10
-  }
+  // Tech stack depth (15 max)
+  const techCount = answers.tech_stack.length
+  if (techCount >= 10) score += 15
+  else if (techCount >= 6) score += 10
+  else if (techCount >= 3) score += 5
+
+  // EE / Right to work (5)
+  if (answers.ee_status) score += 5
+
+  // Remote willingness (10)
+  if (answers.remote_willing === 'yes') score += 10
+
+  // Hybrid willingness (5)
+  if (answers.hybrid_willing === 'yes') score += 5
+
+  // Timezone overlap (20)
+  if (answers.timezone_overlap === 'yes') score += 20
+
+  // Contract terms (10)
+  if (answers.contract_terms === 'yes') score += 10
+
+  // Notice period (10)
+  if (['1-2_weeks', '30_days'].includes(answers.notice_period)) score += 10
+  else if (answers.notice_period === 'calendar_month') score += 8
+  else if (answers.notice_period === '60_days') score += 5
+  else if (answers.notice_period === '90_days') score += 2
+
+  // CTC range (10)
+  const ctc = answers.current_ctc || 0
+  if (ctc >= 500000 && ctc <= 900000) score += 10
+  else if (ctc > 900000 && ctc <= 1200000) score += 7
+  else if (ctc > 1200000) score += 3
 
   let fitLevel: FitLevel
-  if (score >= 70) {
+  if (score >= 75) {
     fitLevel = 'strong'
   } else if (score >= 50) {
     fitLevel = 'possible'
@@ -275,5 +311,41 @@ function calculateScore(): { score: number; fitLevel: FitLevel } {
   }
 
   return { score, fitLevel }
+}
+
+function goNext() {
+  if (!canProceed.value) return
+
+  // Validate reason on step 1
+  if (currentStep.value === 1 && answers.recruitment_preference !== 'not_looking') {
+    if (answers.recruitment_reason.trim().length < 5) {
+      reasonError.value = 'Please provide at least a brief reason'
+      return
+    }
+    reasonError.value = ''
+  }
+
+  // Validate CTC on step 8
+  if (currentStep.value === 8) {
+    const ctc = answers.current_ctc
+    if (!ctc || ctc < 500000 || ctc > 1700000) {
+      ctcError.value = 'Please enter an amount between R500,000 and R1,700,000'
+      return
+    }
+    ctcError.value = ''
+
+    const result = calculateScore()
+    sessionStorage.setItem('screening_result', JSON.stringify({
+      answers: { ...answers },
+      score: result.score,
+      fitLevel: result.fitLevel,
+    }))
+    localStorage.removeItem('truffle_portal_form_v2')
+    router.push('/complete')
+    return
+  }
+
+  transitionName.value = 'slide-left'
+  currentStep.value++
 }
 </script>

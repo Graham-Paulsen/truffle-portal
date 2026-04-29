@@ -66,6 +66,168 @@ function loxoHeaders() {
   }
 }
 
+// ── Loxo Hierarchy Option IDs ──
+
+// H4: EE Status
+const EE_STATUS_IDS = {
+  african_black: 6248129,
+  coloured: 6248130,
+  indian: 6248131,
+  asian: 6248132,
+  white_sa: 6248133,
+  foreign_citizen_post1994: 6248135,
+  foreign_permanent_residency: 6248134,
+  foreign_work_permit: 6248136,
+  foreign_no_right: 6248137,
+}
+
+// H5: Notice Period
+const NOTICE_PERIOD_IDS = {
+  '1-2_weeks': 5994778,
+  '30_days': 5994777,
+  '60_days': 5994776,
+  '90_days': 5994774,
+  calendar_month: 5994775,
+}
+
+// H6: Work Arrangement
+const WORK_ARRANGEMENT_IDS = {
+  remote: 5994781,
+  hybrid: 5994780,
+  onsite: 5994779,
+}
+
+// H7: Recruitment Preference
+const RECRUITMENT_PREF_IDS = {
+  actively_pursuing: 5994784,
+  open_to_exceptional: 5994783,
+  not_looking: 5994782,
+}
+
+// H8: Preferred Location
+const LOCATION_IDS = {
+  cape_town: 5994795,
+  johannesburg: 5994793,
+  pretoria: 5994792,
+  durban: 5994794,
+  international: 5994791,
+}
+
+// H9: Software Proficiency (portal name → Loxo ID)
+const TECH_STACK_IDS = {
+  'SQL Server / T-SQL': 6248144,
+  'SSIS': 6248149,
+  'SSRS': 6248150,
+  'SSAS': 6248148,
+  'SSAS Tabular': 6248139,
+  'Azure SQL': 6248146,
+  'Snowflake': 6248143,
+  'Azure Data Factory': 6248147,
+  'Microsoft Fabric': 6248145,
+  'Power BI': 5994811,
+  'DAX': 6248140,
+  'Power Query': 6248141,
+  'Python': 5994807,
+  'Excel': 5994813,
+  'Azure': 6159562,
+}
+
+// Tech stack items with NO Loxo match → activity note only
+const TECH_STACK_NOTE_ONLY = [
+  'Stored Procedures', 'SAP HANA', 'Data Modelling', 'Query Tuning / Indexing',
+  'Azure Data Lake', 'Databricks', 'APIs', 'Git / GitHub', 'ETL / ELT',
+  'Teradata', 'DTS', 'PBIRS',
+]
+
+// H12: Disabled
+const DISABLED_IDS = {
+  yes: 6248152,
+  no: 6248151,
+}
+
+function mapLocationToId(residence) {
+  if (!residence) return null
+  const lower = residence.toLowerCase().trim()
+  if (lower.includes('cape town')) return LOCATION_IDS.cape_town
+  if (lower.includes('johannesburg') || lower.includes('jhb') || lower.includes('joburg')) return LOCATION_IDS.johannesburg
+  if (lower.includes('pretoria') || lower.includes('pta')) return LOCATION_IDS.pretoria
+  if (lower.includes('durban')) return LOCATION_IDS.durban
+  return LOCATION_IDS.international
+}
+
+// Build Loxo hierarchy arrays from portal answers
+function buildHierarchyFields(answers) {
+  const fields = {}
+
+  // H4: EE Status
+  const eeId = EE_STATUS_IDS[answers.ee_status]
+  if (eeId) {
+    fields.custom_hierarchy_4 = [{ id: eeId }]
+  }
+
+  // H5: Notice Period
+  const noticeId = NOTICE_PERIOD_IDS[answers.notice_period]
+  if (noticeId) {
+    fields.custom_hierarchy_5 = [{ id: noticeId }]
+  }
+
+  // H6: Work Arrangement (multi: remote + hybrid)
+  const arrangements = []
+  if (answers.remote_willing === 'yes') arrangements.push({ id: WORK_ARRANGEMENT_IDS.remote })
+  if (answers.hybrid_willing === 'yes') arrangements.push({ id: WORK_ARRANGEMENT_IDS.hybrid })
+  if (arrangements.length > 0) fields.custom_hierarchy_6 = arrangements
+
+  // H7: Recruitment Preference
+  const prefId = RECRUITMENT_PREF_IDS[answers.recruitment_preference]
+  if (prefId) {
+    fields.custom_hierarchy_7 = [{ id: prefId }]
+  }
+
+  // H8: Preferred Location
+  const locId = mapLocationToId(answers.residence)
+  if (locId) {
+    fields.custom_hierarchy_8 = [{ id: locId }]
+  }
+
+  // H9: Software Proficiency
+  const techIds = (answers.tech_stack || [])
+    .map(t => TECH_STACK_IDS[t])
+    .filter(Boolean)
+    .map(id => ({ id }))
+  if (techIds.length > 0) fields.custom_hierarchy_9 = techIds
+
+  // H12: Disabled
+  if (answers.disabled !== undefined) {
+    fields.custom_hierarchy_12 = [{ id: answers.disabled ? DISABLED_IDS.yes : DISABLED_IDS.no }]
+  }
+
+  // Text fields
+  // custom_text_2 (Availability Notes): recruitment_reason + notice_considerations
+  const notes = []
+  if (answers.recruitment_reason) notes.push(`Reason for leaving: ${answers.recruitment_reason}`)
+  if (answers.notice_considerations) notes.push(`Notice considerations: ${answers.notice_considerations}`)
+  if (notes.length > 0) fields.custom_text_2 = notes.join(' | ')
+
+  // custom_text_4 (ID Number)
+  if (answers.id_number) fields.custom_text_4 = answers.id_number
+
+  // salary (annual CTC)
+  if (answers.current_ctc) fields.salary = answers.current_ctc
+
+  // bonus
+  if (answers.previous_bonus) fields.bonus = answers.previous_bonus
+  if (answers.previous_bonus) fields.bonus_type_id = 1 // Annual
+
+  // compensation_notes: repayable, leave days, expected CTC
+  const compNotes = []
+  if (answers.repayable_on_leaving) compNotes.push(`Repayable on leaving: ${answers.repayable_on_leaving}`)
+  if (answers.annual_leave_days) compNotes.push(`Annual leave: ${answers.annual_leave_days} days`)
+  if (answers.expected_ctc) compNotes.push(`Expected CTC: R${answers.expected_ctc.toLocaleString('en-ZA')} p/a`)
+  if (compNotes.length > 0) fields.compensation_notes = compNotes.join('. ')
+
+  return fields
+}
+
 // Submit screening
 app.post('/api/submit', async (req, res) => {
   const { name, email, phone, answers, score, fit_level } = req.body
@@ -111,21 +273,23 @@ app.post('/api/submit', async (req, res) => {
       )
 
       if (match) {
-        // Update existing person
+        // Update existing person with full field mapping
         existing = true
         loxoid = match.id
+        const hierarchyFields = buildHierarchyFields(answers)
         await axios.patch(
           `${LOXO_BASE}/people/${loxoid}`,
           {
             person: {
-              salary: answers?.ctc_zar || 0,
+              ...hierarchyFields,
               phones: phone ? [{ value: phone }] : [],
             },
           },
           { headers: loxoHeaders(), timeout: 10000 }
         )
       } else {
-        // Create new person
+        // Create new person with full field mapping
+        const hierarchyFields = buildHierarchyFields(answers)
         const loxoRes = await axios.post(
           `${LOXO_BASE}/people`,
           {
@@ -133,7 +297,7 @@ app.post('/api/submit', async (req, res) => {
               name: name || 'Unknown',
               emails: [{ value: email }],
               phones: phone ? [{ value: phone }] : [],
-              salary: answers?.ctc_zar || 0,
+              ...hierarchyFields,
             },
           },
           { headers: loxoHeaders(), timeout: 10000 }
@@ -194,14 +358,29 @@ app.post('/api/submit', async (req, res) => {
           console.error('Screening stage error:', evErr?.response?.data || evErr.message)
         }
 
-        // Person-level activity note with full screening results (no job_id)
+        // Person-level activity note with full screening results
+        const techMapped = (answers?.tech_stack || []).filter(t => TECH_STACK_IDS[t])
+        const techUnmapped = (answers?.tech_stack || []).filter(t => !TECH_STACK_IDS[t])
         const noteLines = [
-          `<li>Timezone overlap: ${answers?.timezone_overlap || ''}</li>`,
-          `<li>Remote work: ${answers?.remote_work || ''}</li>`,
-          `<li>Notice period: ${answers?.notice_period || ''}</li>`,
-          `<li>CTC: R${answers?.ctc_zar || 0}</li>`,
-          `<li>Availability: ${answers?.availability_issue === 'yes' ? (answers?.availability_note || 'yes') : (answers?.availability_issue || '')}</li>`,
-        ].join('')
+          `<li><strong>Recruitment Preference:</strong> ${{'actively_pursuing':'Actively pursuing','open_to_exceptional':'Open to exceptional','not_looking':'Not looking'}[answers?.recruitment_preference] || answers?.recruitment_preference || ''}</li>`,
+          answers?.recruitment_reason ? `<li><strong>Reason for leaving:</strong> ${answers.recruitment_reason}</li>` : '',
+          `<li><strong>Preferred Roles:</strong> ${(answers?.preferred_roles || []).join(', ') || 'None selected'}</li>`,
+          `<li><strong>Tech Stack:</strong> ${techMapped.join(', ')}${techUnmapped.length ? ' + ' + techUnmapped.join(', ') : ''}</li>`,
+          `<li><strong>EE Status:</strong> ${{'african_black':'African Black','coloured':'Coloured','indian':'Indian','asian':'Asian','white_sa':'White SA','foreign_citizen_post1994':'Foreign - Citizenship post 1994','foreign_permanent_residency':'Foreign - Permanent Resident','foreign_work_permit':'Foreign - Work Permit','foreign_no_right':'Foreign - No Right to Work'}[answers?.ee_status] || answers?.ee_status || ''}</li>`,
+          answers?.id_number ? `<li><strong>ID Number:</strong> ${answers.id_number}</li>` : '',
+          `<li><strong>Disabled:</strong> ${answers?.disabled ? 'Yes' : 'No'}</li>`,
+          `<li><strong>Residence:</strong> ${answers?.residence || ''}</li>`,
+          `<li><strong>Remote:</strong> ${answers?.remote_willing === 'yes' ? 'Yes' : 'No'} | <strong>Hybrid:</strong> ${answers?.hybrid_willing === 'yes' ? 'Yes' : 'No'}</li>`,
+          `<li><strong>Timezone Overlap (4-9pm SAST):</strong> ${answers?.timezone_overlap === 'yes' ? 'Yes' : 'No'}</li>`,
+          `<li><strong>Fixed-term Contract:</strong> ${answers?.contract_terms === 'yes' ? 'Yes' : 'No'}</li>`,
+          `<li><strong>Notice Period:</strong> ${{'1-2_weeks':'1-2 Weeks','30_days':'30 Days','60_days':'60 Days','90_days':'90 Days','calendar_month':'Calendar Month'}[answers?.notice_period] || answers?.notice_period || ''}</li>`,
+          answers?.notice_considerations ? `<li><strong>Notice Notes:</strong> ${answers.notice_considerations}</li>` : '',
+          `<li><strong>Current CTC:</strong> R${(answers?.current_ctc || 0).toLocaleString('en-ZA')} p/a</li>`,
+          answers?.previous_bonus ? `<li><strong>Previous Bonus:</strong> R${answers.previous_bonus.toLocaleString('en-ZA')}</li>` : '',
+          answers?.repayable_on_leaving ? `<li><strong>Repayable on leaving:</strong> ${answers.repayable_on_leaving}</li>` : '',
+          answers?.annual_leave_days ? `<li><strong>Annual Leave:</strong> ${answers.annual_leave_days} days</li>` : '',
+          answers?.expected_ctc ? `<li><strong>Expected CTC:</strong> R${answers.expected_ctc.toLocaleString('en-ZA')} p/a</li>` : '',
+        ].filter(Boolean).join('')
 
         try {
           await axios.post(
