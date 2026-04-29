@@ -222,7 +222,7 @@ const canProceed = computed(() => {
     case 3:
       return !!answers.ee_status
     case 4:
-      if (!answers.residence.trim().length > 0 || !answers.remote_willing) return false
+      if (!answers.residence.trim() || !answers.remote_willing) return false
       if (answers.remote_willing === 'yes' && !answers.hybrid_willing) return false
       return true
     case 5:
