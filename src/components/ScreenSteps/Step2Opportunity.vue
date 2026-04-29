@@ -44,9 +44,8 @@
           :class="
             modelTech.includes(tech)
               ? 'bg-gradient-to-r from-cyclamen to-veronica text-white'
-              : 'text-transparent'
+              : 'text-lavender'
           "
-          :style="!modelTech.includes(tech) ? { WebkitTextFillColor: 'transparent', background: 'linear-gradient(135deg, #FF6AA1, #A123E7)', WebkitBackgroundClip: 'text', backgroundClip: 'text' } : {}"
           @click="toggleTech(tech)"
         >
           {{ tech }}
