@@ -75,6 +75,41 @@
     border-radius: 0.5rem;
     padding: 1.25rem 1.5rem;
   }
+
+  /* Selection option cards — gradient border + fill */
+  .option-card {
+    position: relative;
+    width: 100%;
+    text-align: left;
+    padding: 1rem 1.25rem;
+    border-radius: 0.75rem;
+    border: none;
+    background:
+      linear-gradient(#131A30, #131A30) padding-box,
+      linear-gradient(135deg, #FF6AA1, #A123E7) border-box;
+    border: 2px solid transparent;
+    color: #E5DEED;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .option-card:hover {
+    background:
+      linear-gradient(#1a2340, #1a2340) padding-box,
+      linear-gradient(135deg, #FF6AA1, #A123E7) border-box;
+    border: 2px solid transparent;
+  }
+
+  .option-card.selected {
+    background: linear-gradient(135deg, #FF6AA1, #A123E7);
+    color: white;
+    border: none;
+  }
+
+  .option-card:focus-visible {
+    box-shadow: 0 0 0 2px rgba(255, 106, 161, 0.4);
+  }
 }
 
 /* Slide transitions */

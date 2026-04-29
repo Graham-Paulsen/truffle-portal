@@ -9,23 +9,19 @@
         v-for="option in noticeOptions"
         :key="option.value"
         type="button"
-        class="w-full text-left px-5 py-4 rounded-xl border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyclamen/50"
-        :class="
-          modelNotice === option.value
-            ? 'border-cyclamen bg-cyclamen/10 text-white'
-            : 'border-white/10 bg-white/5 text-lavender hover:border-white/30 hover:bg-white/8'
-        "
+        class="option-card"
+        :class="{ selected: modelNotice === option.value }"
         @click="$emit('update:notice', option.value)"
       >
         <span class="flex items-center gap-3">
           <span
             class="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors"
-            :class="modelNotice === option.value ? 'border-cyclamen bg-cyclamen' : 'border-lavender/40'"
+            :class="modelNotice === option.value ? 'border-white bg-white' : 'border-lavender/40'"
           >
-            <span v-if="modelNotice === option.value" class="w-2 h-2 rounded-full bg-white" />
+            <span v-if="modelNotice === option.value" class="w-2 h-2 rounded-full bg-cyclamen" />
           </span>
           {{ option.label }}
-          <span v-if="option.value === '1-2_weeks'" class="ml-auto text-xs text-cyclamen/70 bg-cyclamen/10 px-2 py-0.5 rounded-full">Default</span>
+          <span v-if="option.value === '1-2_weeks'" class="ml-auto text-xs px-2 py-0.5 rounded-full" :class="modelNotice === option.value ? 'text-white/80 bg-white/20' : 'text-cyclamen/70 bg-cyclamen/10'">Default</span>
         </span>
       </button>
     </div>
@@ -39,7 +35,7 @@
         placeholder="e.g. study commitments, planned leave, visa processing..."
         rows="3"
         class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white resize-none focus:outline-none focus:border-cyclamen/60 focus:ring-2 focus:ring-cyclamen/20 transition-colors"
-        @input="$emit('update:considerations', ($event.target as HTMLTextAreaElement).value)"
+        @input="$emit('update:considerations', ($event.target as HTMLInputElement).value)"
       />
     </div>
   </div>

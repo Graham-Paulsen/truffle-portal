@@ -12,20 +12,16 @@
           v-for="role in roles"
           :key="role.value"
           type="button"
-          class="w-full text-left px-5 py-4 rounded-xl border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyclamen/50"
-          :class="
-            modelRoles.includes(role.value)
-              ? 'border-cyclamen bg-cyclamen/10 text-white'
-              : 'border-white/10 bg-white/5 text-lavender hover:border-white/30 hover:bg-white/8'
-          "
+          class="option-card"
+          :class="{ selected: modelRoles.includes(role.value) }"
           @click="toggleRole(role.value)"
         >
           <span class="flex items-center gap-3">
             <span
               class="w-5 h-5 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors"
-              :class="modelRoles.includes(role.value) ? 'border-cyclamen bg-cyclamen' : 'border-lavender/40'"
+              :class="modelRoles.includes(role.value) ? 'border-white bg-white' : 'border-lavender/40'"
             >
-              <svg v-if="modelRoles.includes(role.value)" class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+              <svg v-if="modelRoles.includes(role.value)" class="w-3 h-3 text-cyclamen" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             </span>
@@ -47,16 +43,16 @@
           v-for="tech in techStack"
           :key="tech"
           type="button"
-          class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border"
+          class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-200"
           :class="
             modelTech.includes(tech)
-              ? 'bg-gradient-to-r from-cyclamen to-veronica text-white border-transparent'
-              : 'bg-oxford-blue text-transparent bg-clip-text gradient-text border-transparent'
+              ? 'bg-gradient-to-r from-cyclamen to-veronica text-white'
+              : 'text-transparent'
           "
-          :style="!modelTech.includes(tech) ? { borderImage: 'linear-gradient(135deg, #FF6AA1, #A123E7) 1', color: 'transparent', WebkitBackgroundClip: 'text', backgroundClip: 'text', background: 'linear-gradient(135deg, #FF6AA1, #A123E7)', WebkitTextFillColor: 'transparent', borderWidth: '1px', borderStyle: 'solid', borderColor: '' } : {}"
+          :style="!modelTech.includes(tech) ? { borderImage: 'linear-gradient(135deg, #FF6AA1, #A123E7) 1', borderWidth: '1px', borderStyle: 'solid', WebkitTextFillColor: 'transparent', background: 'linear-gradient(135deg, #FF6AA1, #A123E7)', WebkitBackgroundClip: 'text', backgroundClip: 'text' } : {}"
           @click="toggleTech(tech)"
         >
-          <span :class="modelTech.includes(tech) ? 'text-white' : ''" :style="!modelTech.includes(tech) ? {} : {}">{{ tech }}</span>
+          {{ tech }}
         </button>
       </div>
     </div>
