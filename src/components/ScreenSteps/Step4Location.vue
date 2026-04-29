@@ -33,7 +33,6 @@
               class="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors"
               :class="modelRemote === option.value ? 'border-white bg-white' : 'border-lavender/40'"
             >
-              <span v-if="modelRemote === option.value" class="w-2 h-2 rounded-full bg-cyclamen" />
             </span>
             {{ option.label }}
           </span>
@@ -60,7 +59,6 @@
               class="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors"
               :class="modelHybrid === option.value ? 'border-white bg-white' : 'border-lavender/40'"
             >
-              <span v-if="modelHybrid === option.value" class="w-2 h-2 rounded-full bg-cyclamen" />
             </span>
             {{ option.label }}
           </span>
