@@ -24,7 +24,7 @@
               <input
                 v-model="name"
                 type="text"
-                placeholder="Sonia Negondeni"
+                placeholder="John Doe"
                 required
                 class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-lavender/30 focus:outline-none focus:border-cyclamen/60 focus:ring-2 focus:ring-cyclamen/20 transition-colors"
               />

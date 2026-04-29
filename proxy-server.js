@@ -180,6 +180,9 @@ function buildHierarchyFormData(answers) {
   const locId = mapLocationToId(answers.residence)
   if (locId) form.push({ key: 'person[custom_hierarchy_8][]', value: String(locId) })
 
+  // City / Address (plain text)
+  if (answers.residence) form.push({ key: 'person[city]', value: answers.residence })
+
   // H9: Software Proficiency
   const techIds = (answers.tech_stack || []).map(t => TECH_STACK_IDS[t]).filter(Boolean)
   for (const id of techIds) {
