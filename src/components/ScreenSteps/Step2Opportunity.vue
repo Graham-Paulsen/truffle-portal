@@ -18,12 +18,9 @@
         >
           <span class="flex items-center gap-3">
             <span
-              class="w-5 h-5 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors"
+              class="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors"
               :class="modelRoles.includes(role.value) ? 'border-white bg-white' : 'border-lavender/40'"
             >
-              <svg v-if="modelRoles.includes(role.value)" class="w-3 h-3 text-cyclamen" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
             </span>
             {{ role.label }}
           </span>
