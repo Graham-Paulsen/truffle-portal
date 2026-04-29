@@ -40,13 +40,13 @@
           v-for="tech in techStack"
           :key="tech"
           type="button"
-          class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-200"
+          class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border border-white/20"
           :class="
             modelTech.includes(tech)
               ? 'bg-gradient-to-r from-cyclamen to-veronica text-white'
               : 'text-transparent'
           "
-          :style="!modelTech.includes(tech) ? { borderImage: 'linear-gradient(135deg, #FF6AA1, #A123E7) 1', borderWidth: '1px', borderStyle: 'solid', WebkitTextFillColor: 'transparent', background: 'linear-gradient(135deg, #FF6AA1, #A123E7)', WebkitBackgroundClip: 'text', backgroundClip: 'text' } : {}"
+          :style="!modelTech.includes(tech) ? { WebkitTextFillColor: 'transparent', background: 'linear-gradient(135deg, #FF6AA1, #A123E7)', WebkitBackgroundClip: 'text', backgroundClip: 'text' } : {}"
           @click="toggleTech(tech)"
         >
           {{ tech }}
@@ -65,16 +65,14 @@ const roles = [
 ]
 
 const techStack = [
-  // Data & Databases
-  'SQL Server / T-SQL', 'Stored Procedures', 'SSIS', 'SSRS', 'SSAS', 'SSAS Tabular',
-  'Azure SQL', 'Snowflake', 'SAP HANA', 'Data Modelling', 'Query Tuning / Indexing',
-  // Cloud & Modern
-  'Azure Data Factory', 'Microsoft Fabric', 'Azure Data Lake', 'Databricks',
-  'Power BI', 'DAX', 'Power Query', 'APIs',
-  // General
-  'Python', 'Git / GitHub', 'Excel', 'ETL / ELT',
-  // Legacy
-  'Teradata', 'DTS', 'PBIRS',
+  // Alphabetical
+  'APIs', 'Azure Data Factory', 'Azure Data Lake', 'Azure SQL',
+  'Databricks', 'Data Modelling', 'DAX', 'DTS',
+  'ETL / ELT', 'Excel', 'Git / GitHub', 'Microsoft Fabric',
+  'Power BI', 'Power Query', 'Python', 'Query Tuning / Indexing',
+  'SAP HANA', 'Snowflake', 'SSAS', 'SSAS Tabular',
+  'SSIS', 'SSRS', 'Stored Procedures', 'Teradata',
+  'PBIRS', 'SQL Server / T-SQL',
 ]
 
 const props = defineProps<{
