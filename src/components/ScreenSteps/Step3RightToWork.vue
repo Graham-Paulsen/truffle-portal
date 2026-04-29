@@ -84,17 +84,17 @@
     </div>
 
     <!-- Disabled Toggle -->
-    <div class="mt-6 flex items-center justify-between px-5 py-4 rounded-xl border border-white/10 bg-white/5">
+    <div class="mt-6 flex items-center justify-between px-5 py-4 rounded-xl border border-white/10 bg-oxford-blue">
       <span class="text-lavender">Do you have a disability?</span>
       <button
         type="button"
         class="relative w-12 h-7 rounded-full transition-colors duration-200"
-        :class="modelDisabled ? 'bg-gradient-to-r from-cyclamen to-veronica' : 'bg-white/20'"
+        :class="modelDisabled ? 'bg-cyclamen' : 'bg-white/10'"
         @click="$emit('update:disabled', !modelDisabled)"
       >
         <span
-          class="absolute top-0.5 left-0.5 w-6 h-6 rounded-full bg-white transition-transform duration-200"
-          :class="modelDisabled ? 'translate-x-5' : 'translate-x-0'"
+          class="absolute top-0.5 left-0.5 w-6 h-6 rounded-full transition-all duration-200"
+          :class="modelDisabled ? 'translate-x-5 bg-white' : 'translate-x-0 bg-lavender/60'"
         />
       </button>
     </div>
