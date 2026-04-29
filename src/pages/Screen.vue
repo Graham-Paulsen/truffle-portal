@@ -21,9 +21,9 @@
 
     <!-- Form area -->
     <div class="flex-1 flex flex-col justify-center px-6 py-8">
-      <div class="max-w-xl mx-auto w-full relative" style="min-height: 320px;">
-        <Transition :name="transitionName">
-          <div :key="currentStep" class="absolute inset-0 overflow-y-auto pr-1">
+      <div class="max-w-xl mx-auto w-full">
+        <Transition :name="transitionName" mode="out-in">
+          <div :key="currentStep">
             <!-- Step 1: Recruitment Preference -->
             <Step1Recruitment
               v-if="currentStep === 1"
