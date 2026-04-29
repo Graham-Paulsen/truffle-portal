@@ -40,10 +40,10 @@
       </div>
     </div>
 
-    <!-- Hybrid Willingness -->
-    <div>
+    <!-- Hybrid Willingness — only shown if user said fully remote is fine -->
+    <div v-if="modelRemote === 'yes'">
       <p class="text-sm font-medium text-lavender/70 mb-3">
-        Would you be open to a hybrid arrangement in the Cape Town Northern suburbs, should the client require it?
+        Would you also be open to a hybrid arrangement in the Cape Town northern suburbs, should the client require it later?
       </p>
       <div class="space-y-3">
         <button
@@ -69,6 +69,8 @@
 </template>
 
 <script setup lang="ts">
+import { watch } from 'vue'
+
 const remoteOptions = [
   { label: 'Yes — fully remote is fine', value: 'yes' },
   { label: 'No — I prefer on-site or hybrid', value: 'no' },
@@ -79,15 +81,22 @@ const hybridOptions = [
   { label: 'No — I would prefer to stay fully remote', value: 'no' },
 ]
 
-defineProps<{
+const props = defineProps<{
   modelResidence: string
   modelRemote: string
   modelHybrid: string
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   'update:residence': [value: string]
   'update:remote': [value: string]
   'update:hybrid': [value: string]
 }>()
+
+// Clear hybrid answer if user switches away from "fully remote"
+watch(() => props.modelRemote, (newVal) => {
+  if (newVal !== 'yes') {
+    emit('update:hybrid', '')
+  }
+})
 </script>
