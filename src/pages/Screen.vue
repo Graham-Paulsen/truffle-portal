@@ -3,7 +3,7 @@
     <!-- Nav -->
     <nav class="flex items-center justify-between px-6 py-4 border-b border-lavender/10 bg-oxford-blue/95 backdrop-blur-sm sticky top-0 z-50">
       <router-link to="/" class="flex items-center">
-        <TruffleLogo className="h-8 w-auto" />
+        <TruffleLogo className="h-10 w-auto" />
       </router-link>
     </nav>
 
