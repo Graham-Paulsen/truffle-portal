@@ -202,11 +202,11 @@ function buildHierarchyFields(answers) {
   }
 
   // Text fields
-  // custom_text_2 (Availability Notes): recruitment_reason + notice_considerations
+  // custom_text_1 (Availability Notes): recruitment_reason + notice_considerations
   const notes = []
   if (answers.recruitment_reason) notes.push(`Reason for leaving: ${answers.recruitment_reason}`)
   if (answers.notice_considerations) notes.push(`Notice considerations: ${answers.notice_considerations}`)
-  if (notes.length > 0) fields.custom_text_2 = notes.join(' | ')
+  if (notes.length > 0) fields.custom_text_1 = notes.join(' | ')
 
   // custom_text_4 (ID Number)
   if (answers.id_number) fields.custom_text_4 = answers.id_number
