@@ -31,7 +31,7 @@
           <span class="flex items-center gap-3">
             <span
               class="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors"
-              :class="modelRemote === option.value ? 'border-white bg-white' : 'border-lavender/40'"
+              :class="modelRemote === option.value ? 'border-cyclamen bg-cyclamen' : 'border-white/20'"
             >
             </span>
             {{ option.label }}
@@ -57,7 +57,7 @@
           <span class="flex items-center gap-3">
             <span
               class="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors"
-              :class="modelHybrid === option.value ? 'border-white bg-white' : 'border-lavender/40'"
+              :class="modelHybrid === option.value ? 'border-cyclamen bg-cyclamen' : 'border-white/20'"
             >
             </span>
             {{ option.label }}
