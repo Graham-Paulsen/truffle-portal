@@ -57,18 +57,33 @@
       />
     </div>
 
-    <!-- Annual Leave Days -->
+    <!-- Annual Leave Days — custom navy stepper -->
     <div>
       <label class="block text-sm font-medium text-lavender/70 mb-1.5">Annual leave days (current entitlement)</label>
-      <input
-        :value="modelLeaveDays"
-        type="number"
-        min="0"
-        max="40"
-        placeholder="20"
-        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-lavender/30 focus:outline-none focus:border-cyclamen/60 focus:ring-2 focus:ring-cyclamen/20 transition-colors"
-        @input="$emit('update:leaveDays', Number(($event.target as HTMLInputElement).value) || 0)"
-      />
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          class="w-10 h-10 rounded-lg bg-white/10 text-lavender text-lg font-medium hover:bg-white/20 transition-colors flex items-center justify-center"
+          @click="modelLeaveDays > 0 && $emit('update:leaveDays', modelLeaveDays - 1)"
+        >
+          −
+        </button>
+        <input
+          type="number"
+          min="0"
+          max="40"
+          :value="modelLeaveDays"
+          class="w-20 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-center text-white focus:outline-none focus:border-cyclamen/60 transition-colors [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+          @input="$emit('update:leaveDays', Number(($event.target as HTMLInputElement).value) || 0)"
+        />
+        <button
+          type="button"
+          class="w-10 h-10 rounded-lg bg-white/10 text-lavender text-lg font-medium hover:bg-white/20 transition-colors flex items-center justify-center"
+          @click="modelLeaveDays < 40 && $emit('update:leaveDays', modelLeaveDays + 1)"
+        >
+          +
+        </button>
+      </div>
     </div>
 
     <!-- Expected CTC -->

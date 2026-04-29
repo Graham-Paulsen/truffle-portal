@@ -105,6 +105,17 @@
   .option-card:focus-visible {
     box-shadow: 0 0 0 2px rgba(255, 106, 161, 0.4);
   }
+
+  /* Number input — hide browser spin buttons */
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 }
 
 /* Fade transition */
