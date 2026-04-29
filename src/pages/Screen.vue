@@ -22,7 +22,7 @@
     <!-- Form area -->
     <div class="flex-1 flex flex-col justify-center px-6 py-8">
       <div class="max-w-xl mx-auto w-full">
-        <Transition :name="transitionName" mode="out-in">
+        <Transition name="fade" mode="out-in">
           <div :key="currentStep">
             <!-- Step 1: Recruitment Preference -->
             <Step1Recruitment
@@ -149,7 +149,7 @@ import Step8Compensation from '../components/ScreenSteps/Step8Compensation.vue'
 const router = useRouter()
 
 const currentStep = ref(1)
-const transitionName = ref('slide-left')
+// Transition removed — using fade globally
 const ctcError = ref('')
 const reasonError = ref('')
 const restoredFromStorage = ref(false)
@@ -246,7 +246,7 @@ function onCtcChange(val: number | null) {
 }
 
 function goBack() {
-  transitionName.value = 'slide-right'
+  // No transition direction needed with fade
   currentStep.value--
 }
 
@@ -345,7 +345,7 @@ function goNext() {
     return
   }
 
-  transitionName.value = 'slide-left'
+  // No transition direction needed with fade
   currentStep.value++
 }
 </script>

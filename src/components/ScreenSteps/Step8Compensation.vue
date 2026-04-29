@@ -16,7 +16,7 @@
           type="text"
           inputmode="numeric"
           :value="formatNumber(modelCurrentCtc)"
-          placeholder="e.g. 850,000"
+          placeholder="850,000"
           class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pl-8 text-white placeholder-lavender/30 focus:outline-none focus:border-cyclamen/60 focus:ring-2 focus:ring-cyclamen/20 transition-colors"
           :class="{ 'border-red-500/60': ctcError }"
           @input="handleNumberInput($event, 'update:currentCtc')"
@@ -24,7 +24,6 @@
         />
       </div>
       <p v-if="ctcError" class="mt-1 text-red-400 text-sm">{{ ctcError }}</p>
-      <p v-else class="mt-1 text-lavender/40 text-xs">R500,000 – R1,700,000</p>
     </div>
 
     <!-- Previous Bonus -->
@@ -36,7 +35,7 @@
           type="text"
           inputmode="numeric"
           :value="formatNumber(modelBonus)"
-          placeholder="e.g. 120,000"
+          placeholder="120,000"
           class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pl-8 text-white placeholder-lavender/30 focus:outline-none focus:border-cyclamen/60 focus:ring-2 focus:ring-cyclamen/20 transition-colors"
           @input="handleNumberInput($event, 'update:bonus')"
           @focus="($event.target as HTMLInputElement).select()"
@@ -51,7 +50,7 @@
       </label>
       <textarea
         :value="modelRepayable"
-        placeholder="e.g. study loan, relocation costs..."
+        placeholder="Study loan, relocation costs..."
         rows="2"
         class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white resize-none focus:outline-none focus:border-cyclamen/60 focus:ring-2 focus:ring-cyclamen/20 transition-colors"
         @input="$emit('update:repayable', ($event.target as HTMLTextAreaElement).value)"
@@ -66,7 +65,7 @@
         type="number"
         min="0"
         max="40"
-        placeholder="e.g. 20"
+        placeholder="20"
         class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-lavender/30 focus:outline-none focus:border-cyclamen/60 focus:ring-2 focus:ring-cyclamen/20 transition-colors"
         @input="$emit('update:leaveDays', Number(($event.target as HTMLInputElement).value) || 0)"
       />
@@ -81,7 +80,7 @@
           type="text"
           inputmode="numeric"
           :value="formatNumber(modelExpectedCtc)"
-          placeholder="e.g. 1,000,000"
+          placeholder="1,000,000"
           class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pl-8 text-white placeholder-lavender/30 focus:outline-none focus:border-cyclamen/60 focus:ring-2 focus:ring-cyclamen/20 transition-colors"
           @input="handleNumberInput($event, 'update:expectedCtc')"
           @focus="($event.target as HTMLInputElement).select()"

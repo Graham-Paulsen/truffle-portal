@@ -19,9 +19,8 @@
         <span class="flex items-center gap-3">
           <span
             class="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors"
-            :class="modelValue === option.value ? 'border-white bg-white' : 'border-lavender/40'"
+            :class="modelValue === option.value ? 'border-cyclamen bg-cyclamen' : 'border-white/20'"
           >
-            <span v-if="modelValue === option.value" class="w-2 h-2 rounded-full bg-cyclamen" />
           </span>
           {{ option.label }}
         </span>

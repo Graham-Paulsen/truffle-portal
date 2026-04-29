@@ -76,18 +76,15 @@
     padding: 1.25rem 1.5rem;
   }
 
-  /* Selection option cards — gradient border + fill */
+  /* Selection option cards — navy + gray, pink accent when selected */
   .option-card {
     position: relative;
     width: 100%;
     text-align: left;
     padding: 1rem 1.25rem;
     border-radius: 0.75rem;
-    border: none;
-    background:
-      linear-gradient(#131A30, #131A30) padding-box,
-      linear-gradient(135deg, #FF6AA1, #A123E7) border-box;
-    border: 2px solid transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #131A30;
     color: #E5DEED;
     transition: all 0.2s ease;
     cursor: pointer;
@@ -95,16 +92,14 @@
   }
 
   .option-card:hover {
-    background:
-      linear-gradient(#1a2340, #1a2340) padding-box,
-      linear-gradient(135deg, #FF6AA1, #A123E7) border-box;
-    border: 2px solid transparent;
+    background: #1a2340;
+    border-color: rgba(255, 255, 255, 0.15);
   }
 
   .option-card.selected {
-    background: linear-gradient(135deg, #FF6AA1, #A123E7);
+    background: rgba(255, 106, 161, 0.08);
+    border-color: rgba(255, 106, 161, 0.3);
     color: white;
-    border: none;
   }
 
   .option-card:focus-visible {
@@ -112,32 +107,13 @@
   }
 }
 
-/* Slide transitions */
-.slide-left-enter-active,
-.slide-left-leave-active,
-.slide-right-enter-active,
-.slide-right-leave-active {
-  transition: all 0.3s ease;
-  position: absolute;
-  width: 100%;
+/* Fade transition */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease;
 }
 
-.slide-left-enter-from {
-  transform: translateX(100%);
-  opacity: 0;
-}
-
-.slide-left-leave-to {
-  transform: translateX(-100%);
-  opacity: 0;
-}
-
-.slide-right-enter-from {
-  transform: translateX(-100%);
-  opacity: 0;
-}
-
-.slide-right-leave-to {
-  transform: translateX(100%);
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }

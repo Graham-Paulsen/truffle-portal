@@ -4,28 +4,24 @@
       Right to Work in South Africa and Employment Equity Status
     </h2>
 
-    <!-- EE / Non-EE Tabs -->
-    <div class="flex gap-2">
+    <!-- EE / Non-EE Segmented Control -->
+    <div class="relative flex rounded-full bg-white/5 p-1 border border-white/10">
+      <div
+        class="absolute top-1 bottom-1 rounded-full bg-gradient-to-r from-cyclamen to-veronica transition-all duration-200 ease-in-out"
+        :style="{ left: activeTab === 'ee' ? '4px' : '50%', width: 'calc(50% - 4px)' }"
+      />
       <button
         type="button"
-        class="px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200"
-        :class="
-          activeTab === 'ee'
-            ? 'bg-gradient-to-r from-cyclamen to-veronica text-white'
-            : 'bg-white/5 text-lavender border border-white/10 hover:border-white/30'
-        "
+        class="relative z-10 flex-1 px-5 py-2 rounded-full text-sm font-medium transition-colors duration-200"
+        :class="activeTab === 'ee' ? 'text-white' : 'text-lavender/60'"
         @click="activeTab = 'ee'"
       >
         EE
       </button>
       <button
         type="button"
-        class="px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200"
-        :class="
-          activeTab === 'non-ee'
-            ? 'bg-gradient-to-r from-cyclamen to-veronica text-white'
-            : 'bg-white/5 text-lavender border border-white/10 hover:border-white/30'
-        "
+        class="relative z-10 flex-1 px-5 py-2 rounded-full text-sm font-medium transition-colors duration-200"
+        :class="activeTab === 'non-ee' ? 'text-white' : 'text-lavender/60'"
         @click="activeTab = 'non-ee'"
       >
         Non-EE
@@ -45,9 +41,8 @@
         <span class="flex items-center gap-3">
           <span
             class="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors"
-            :class="modelStatus === option.value ? 'border-white bg-white' : 'border-lavender/40'"
+            :class="modelStatus === option.value ? 'border-cyclamen bg-cyclamen' : 'border-white/20'"
           >
-            <span v-if="modelStatus === option.value" class="w-2 h-2 rounded-full bg-cyclamen" />
           </span>
           {{ option.label }}
         </span>
@@ -67,9 +62,8 @@
         <span class="flex items-center gap-3">
           <span
             class="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors"
-            :class="modelStatus === option.value ? 'border-white bg-white' : 'border-lavender/40'"
+            :class="modelStatus === option.value ? 'border-cyclamen bg-cyclamen' : 'border-white/20'"
           >
-            <span v-if="modelStatus === option.value" class="w-2 h-2 rounded-full bg-cyclamen" />
           </span>
           {{ option.label }}
         </span>
@@ -90,17 +84,17 @@
     </div>
 
     <!-- Disabled Toggle -->
-    <div class="mt-6 flex items-center justify-between px-5 py-4 rounded-xl border border-white/10 bg-white/5">
+    <div class="mt-6 flex items-center justify-between px-5 py-4 rounded-xl border border-white/10 bg-oxford-blue">
       <span class="text-lavender">Do you have a disability?</span>
       <button
         type="button"
         class="relative w-12 h-7 rounded-full transition-colors duration-200"
-        :class="modelDisabled ? 'bg-gradient-to-r from-cyclamen to-veronica' : 'bg-white/20'"
+        :class="modelDisabled ? 'bg-cyclamen' : 'bg-white/10'"
         @click="$emit('update:disabled', !modelDisabled)"
       >
         <span
-          class="absolute top-0.5 left-0.5 w-6 h-6 rounded-full bg-white transition-transform duration-200"
-          :class="modelDisabled ? 'translate-x-5' : 'translate-x-0'"
+          class="absolute top-0.5 left-0.5 w-6 h-6 rounded-full transition-all duration-200"
+          :class="modelDisabled ? 'translate-x-5 bg-white' : 'translate-x-0 bg-lavender/60'"
         />
       </button>
     </div>

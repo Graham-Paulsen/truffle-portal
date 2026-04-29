@@ -16,12 +16,11 @@
         <span class="flex items-center gap-3">
           <span
             class="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors"
-            :class="modelNotice === option.value ? 'border-white bg-white' : 'border-lavender/40'"
+            :class="modelNotice === option.value ? 'border-cyclamen bg-cyclamen' : 'border-white/20'"
           >
-            <span v-if="modelNotice === option.value" class="w-2 h-2 rounded-full bg-cyclamen" />
           </span>
           {{ option.label }}
-          <span v-if="option.value === '1-2_weeks'" class="ml-auto text-xs px-2 py-0.5 rounded-full" :class="modelNotice === option.value ? 'text-white/80 bg-white/20' : 'text-cyclamen/70 bg-cyclamen/10'">Default</span>
+
         </span>
       </button>
     </div>

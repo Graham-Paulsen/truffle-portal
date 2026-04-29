@@ -2,6 +2,7 @@ const express = require('express')
 const path = require('path')
 const { Pool } = require('pg')
 const axios = require('axios')
+const FormData = require('form-data')
 
 const app = express()
 const PORT = process.env.PORT || 8080
@@ -156,76 +157,82 @@ function mapLocationToId(residence) {
 }
 
 // Build Loxo hierarchy arrays from portal answers
-function buildHierarchyFields(answers) {
-  const fields = {}
+function buildHierarchyFormData(answers) {
+  const form = []
 
   // H4: EE Status
   const eeId = EE_STATUS_IDS[answers.ee_status]
-  if (eeId) {
-    fields.custom_hierarchy_4 = [{ id: eeId }]
-  }
+  if (eeId) form.push({ key: 'person[custom_hierarchy_4][]', value: String(eeId) })
 
   // H5: Notice Period
   const noticeId = NOTICE_PERIOD_IDS[answers.notice_period]
-  if (noticeId) {
-    fields.custom_hierarchy_5 = [{ id: noticeId }]
-  }
+  if (noticeId) form.push({ key: 'person[custom_hierarchy_5][]', value: String(noticeId) })
 
   // H6: Work Arrangement (multi: remote + hybrid)
-  const arrangements = []
-  if (answers.remote_willing === 'yes') arrangements.push({ id: WORK_ARRANGEMENT_IDS.remote })
-  if (answers.hybrid_willing === 'yes') arrangements.push({ id: WORK_ARRANGEMENT_IDS.hybrid })
-  if (arrangements.length > 0) fields.custom_hierarchy_6 = arrangements
+  if (answers.remote_willing === 'yes') form.push({ key: 'person[custom_hierarchy_6][]', value: String(WORK_ARRANGEMENT_IDS.remote) })
+  if (answers.hybrid_willing === 'yes') form.push({ key: 'person[custom_hierarchy_6][]', value: String(WORK_ARRANGEMENT_IDS.hybrid) })
 
   // H7: Recruitment Preference
   const prefId = RECRUITMENT_PREF_IDS[answers.recruitment_preference]
-  if (prefId) {
-    fields.custom_hierarchy_7 = [{ id: prefId }]
-  }
+  if (prefId) form.push({ key: 'person[custom_hierarchy_7][]', value: String(prefId) })
 
   // H8: Preferred Location
   const locId = mapLocationToId(answers.residence)
-  if (locId) {
-    fields.custom_hierarchy_8 = [{ id: locId }]
-  }
+  if (locId) form.push({ key: 'person[custom_hierarchy_8][]', value: String(locId) })
 
   // H9: Software Proficiency
-  const techIds = (answers.tech_stack || [])
-    .map(t => TECH_STACK_IDS[t])
-    .filter(Boolean)
-    .map(id => ({ id }))
-  if (techIds.length > 0) fields.custom_hierarchy_9 = techIds
+  const techIds = (answers.tech_stack || []).map(t => TECH_STACK_IDS[t]).filter(Boolean)
+  for (const id of techIds) {
+    form.push({ key: 'person[custom_hierarchy_9][]', value: String(id) })
+  }
 
   // H12: Disabled
   if (answers.disabled !== undefined) {
-    fields.custom_hierarchy_12 = [{ id: answers.disabled ? DISABLED_IDS.yes : DISABLED_IDS.no }]
+    form.push({ key: 'person[custom_hierarchy_12][]', value: String(answers.disabled ? DISABLED_IDS.yes : DISABLED_IDS.no) })
   }
 
   // Text fields
-  // custom_text_2 (Availability Notes): recruitment_reason + notice_considerations
   const notes = []
   if (answers.recruitment_reason) notes.push(`Reason for leaving: ${answers.recruitment_reason}`)
   if (answers.notice_considerations) notes.push(`Notice considerations: ${answers.notice_considerations}`)
-  if (notes.length > 0) fields.custom_text_2 = notes.join(' | ')
+  if (notes.length > 0) form.push({ key: 'person[custom_text_1]', value: notes.join(' | ') })
 
-  // custom_text_4 (ID Number)
-  if (answers.id_number) fields.custom_text_4 = answers.id_number
+  if (answers.id_number) form.push({ key: 'person[custom_text_4]', value: answers.id_number })
 
-  // salary (annual CTC)
-  if (answers.current_ctc) fields.salary = answers.current_ctc
+  // Salary
+  if (answers.current_ctc) form.push({ key: 'person[salary]', value: String(answers.current_ctc) })
 
-  // bonus
-  if (answers.previous_bonus) fields.bonus = answers.previous_bonus
-  if (answers.previous_bonus) fields.bonus_type_id = 1 // Annual
+  // Bonus
+  if (answers.previous_bonus) {
+    form.push({ key: 'person[bonus]', value: String(answers.previous_bonus) })
+    form.push({ key: 'person[bonus_type_id]', value: '1' })
+  }
 
-  // compensation_notes: repayable, leave days, expected CTC
+  // Compensation notes
   const compNotes = []
   if (answers.repayable_on_leaving) compNotes.push(`Repayable on leaving: ${answers.repayable_on_leaving}`)
   if (answers.annual_leave_days) compNotes.push(`Annual leave: ${answers.annual_leave_days} days`)
   if (answers.expected_ctc) compNotes.push(`Expected CTC: R${answers.expected_ctc.toLocaleString('en-ZA')} p/a`)
-  if (compNotes.length > 0) fields.compensation_notes = compNotes.join('. ')
+  if (compNotes.length > 0) form.push({ key: 'person[compensation_notes]', value: compNotes.join('. ') })
 
-  return fields
+  return form
+}
+
+// Send custom fields via PUT multipart/form-data (Loxo requires this for hierarchy fields)
+async function updatePersonFields(personId, answers) {
+  const formData = buildHierarchyFormData(answers)
+  if (formData.length === 0) return
+
+  const form = new FormData()
+  for (const entry of formData) {
+    form.append(entry.key, entry.value)
+  }
+
+  await axios.put(
+    `${LOXO_BASE}/people/${personId}`,
+    form,
+    { headers: { ...loxoHeaders(), ...form.getHeaders() }, timeout: 15000 }
+  )
 }
 
 // Submit screening
@@ -273,36 +280,26 @@ app.post('/api/submit', async (req, res) => {
       )
 
       if (match) {
-        // Update existing person with full field mapping
+        // Update existing person — basic profile via PATCH
         existing = true
         loxoid = match.id
-        const hierarchyFields = buildHierarchyFields(answers)
         await axios.patch(
           `${LOXO_BASE}/people/${loxoid}`,
-          {
-            person: {
-              ...hierarchyFields,
-              phones: phone ? [{ value: phone }] : [],
-            },
-          },
+          { person: { phones: phone ? [{ value: phone }] : [] } },
           { headers: loxoHeaders(), timeout: 10000 }
         )
+        // Custom fields via PUT multipart/form-data
+        await updatePersonFields(loxoid, answers)
       } else {
-        // Create new person with full field mapping
-        const hierarchyFields = buildHierarchyFields(answers)
+        // Create new person — basic profile via POST JSON
         const loxoRes = await axios.post(
           `${LOXO_BASE}/people`,
-          {
-            person: {
-              name: name || 'Unknown',
-              emails: [{ value: email }],
-              phones: phone ? [{ value: phone }] : [],
-              ...hierarchyFields,
-            },
-          },
+          { person: { name: name || 'Unknown', emails: [{ value: email }], phones: phone ? [{ value: phone }] : [] } },
           { headers: loxoHeaders(), timeout: 10000 }
         )
         loxoid = loxoRes.data?.id || loxoRes.data?.person?.id || null
+        // Custom fields via PUT multipart/form-data
+        if (loxoid) await updatePersonFields(loxoid, answers)
       }
 
       if (loxoid) {
