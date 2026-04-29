@@ -20,7 +20,7 @@
           >
           </span>
           {{ option.label }}
-          <span v-if="option.value === '1-2_weeks'" class="ml-auto text-xs px-2 py-0.5 rounded-full" :class="modelNotice === option.value ? 'text-white/80 bg-white/20' : 'text-cyclamen/70 bg-cyclamen/10'">Default</span>
+
         </span>
       </button>
     </div>
