@@ -4,28 +4,24 @@
       Right to Work in South Africa and Employment Equity Status
     </h2>
 
-    <!-- EE / Non-EE Tabs -->
-    <div class="flex gap-2">
+    <!-- EE / Non-EE Segmented Control -->
+    <div class="relative flex rounded-full bg-white/5 p-1 border border-white/10">
+      <div
+        class="absolute top-1 bottom-1 rounded-full bg-gradient-to-r from-cyclamen to-veronica transition-all duration-200 ease-in-out"
+        :style="{ left: activeTab === 'ee' ? '4px' : '50%', width: 'calc(50% - 4px)' }"
+      />
       <button
         type="button"
-        class="px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200"
-        :class="
-          activeTab === 'ee'
-            ? 'bg-gradient-to-r from-cyclamen to-veronica text-white'
-            : 'bg-white/5 text-lavender border border-white/10 hover:border-white/30'
-        "
+        class="relative z-10 flex-1 px-5 py-2 rounded-full text-sm font-medium transition-colors duration-200"
+        :class="activeTab === 'ee' ? 'text-white' : 'text-lavender/60'"
         @click="activeTab = 'ee'"
       >
         EE
       </button>
       <button
         type="button"
-        class="px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200"
-        :class="
-          activeTab === 'non-ee'
-            ? 'bg-gradient-to-r from-cyclamen to-veronica text-white'
-            : 'bg-white/5 text-lavender border border-white/10 hover:border-white/30'
-        "
+        class="relative z-10 flex-1 px-5 py-2 rounded-full text-sm font-medium transition-colors duration-200"
+        :class="activeTab === 'non-ee' ? 'text-white' : 'text-lavender/60'"
         @click="activeTab = 'non-ee'"
       >
         Non-EE
