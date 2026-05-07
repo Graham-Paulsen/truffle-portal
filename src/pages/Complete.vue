@@ -71,6 +71,31 @@
 
           <ResultBadge :fit-level="fitLevel" />
 
+          <!-- Per-job score cards -->
+          <div v-if="jobResults.length" class="space-y-4 text-left">
+            <div v-for="jr in jobResults" :key="jr.jobId" class="card space-y-2">
+              <div class="flex items-center justify-between">
+                <h3 class="text-white font-medium text-sm">{{ jr.title }}</h3>
+                <span
+                  class="text-xs font-semibold px-2.5 py-1 rounded-full"
+                  :class="{
+                    'bg-green-500/20 text-green-400': jr.fitLevel === 'strong',
+                    'bg-yellow-500/20 text-yellow-400': jr.fitLevel === 'possible',
+                    'bg-orange-500/20 text-orange-400': jr.fitLevel === 'under_review',
+                  }"
+                >
+                  {{ jr.score }}/100
+                </span>
+              </div>
+              <div class="grid grid-cols-4 gap-2 text-xs text-lavender/60">
+                <div>Tech<br><span class="text-white font-medium">{{ jr.breakdown.tech }}/50</span></div>
+                <div>Skills<br><span class="text-white font-medium">{{ jr.breakdown.competencies }}/20</span></div>
+                <div>Notice<br><span class="text-white font-medium">{{ jr.breakdown.notice }}/15</span></div>
+                <div>CTC<br><span class="text-white font-medium">{{ jr.breakdown.ctc }}/15</span></div>
+              </div>
+            </div>
+          </div>
+
           <div class="card text-left space-y-3">
             <h3 class="text-white font-medium text-sm">What happens next?</h3>
             <ul class="space-y-2 text-lavender/70 text-sm">
@@ -118,7 +143,18 @@ const submitting = ref(false)
 const submitError = ref('')
 const fitLevel = ref<FitLevel>('under_review')
 
-let screeningData: { answers: Record<string, unknown>; score: number; fitLevel: FitLevel } | null = null
+interface JobResult {
+  jobId: string
+  title: string
+  loxoJobId: number
+  score: number
+  fitLevel: FitLevel
+  breakdown: { tech: number; competencies: number; notice: number; ctc: number }
+}
+
+const jobResults = ref<JobResult[]>([])
+
+let screeningData: { answers: Record<string, unknown>; score: number; fitLevel: FitLevel; jobResults: JobResult[] } | null = null
 
 onMounted(() => {
   const raw = sessionStorage.getItem('screening_result')
@@ -144,9 +180,11 @@ async function submitForm() {
       answers: screeningData.answers,
       score: screeningData.score,
       fit_level: screeningData.fitLevel,
+      jobResults: screeningData.jobResults,
     })
 
     fitLevel.value = screeningData.fitLevel
+    jobResults.value = screeningData.jobResults || []
     revealed.value = true
     sessionStorage.removeItem('screening_result')
     localStorage.removeItem('truffle_portal_form')

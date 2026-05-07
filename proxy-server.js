@@ -9,7 +9,12 @@ const PORT = process.env.PORT || 8080
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'WWPS2026'
 const LOXO_API_KEY = process.env.LOXO_API_KEY || ''
 const LOXO_BASE = 'https://truffle-talent.app.loxo.co/api/truffle-talent'
-const WWPS_JOB_ID = 3568888
+const WWPS_JOBS = {
+  'intermediate_data_engineer': 3568888,
+  'senior_data_engineer': 3568889,
+  'senior_sql_developer': 3568890,
+  'senior_bi_developer': 3568891,
+}
 
 app.use(express.json())
 
@@ -30,6 +35,7 @@ async function ensureTable() {
       answers JSONB,
       score INTEGER,
       fit_level VARCHAR(20),
+      job_results JSONB,
       loxoid VARCHAR(50),
       created_at TIMESTAMP DEFAULT NOW()
     )
@@ -240,7 +246,7 @@ async function updatePersonFields(personId, answers) {
 
 // Submit screening
 app.post('/api/submit', async (req, res) => {
-  const { name, email, phone, answers, score, fit_level } = req.body
+  const { name, email, phone, answers, score, fit_level, jobResults } = req.body
 
   if (!email) {
     return res.status(400).json({ error: 'Email is required' })
@@ -306,80 +312,105 @@ app.post('/api/submit', async (req, res) => {
       }
 
       if (loxoid) {
-        // Check if person is already on the WWPS job
-        let alreadyOnJob = false
-        try {
-          const candRes = await axios.get(
-            `${LOXO_BASE}/jobs/${WWPS_JOB_ID}/candidates`,
-            { params: { person_id: loxoid, per_page: 1 }, headers: loxoHeaders(), timeout: 10000 }
-          )
-          const candidates = candRes.data?.candidates || candRes.data || []
-          alreadyOnJob = candidates.some(
-            (c) => String(c.person_id || c.person?.id) === String(loxoid)
-          )
-        } catch (lookupErr) {
-          console.error('Job candidate lookup error:', lookupErr?.response?.data || lookupErr.message)
-        }
+        // Process each job from jobResults
+        const jobs = jobResults || []
+        for (const jr of jobs) {
+          const loxoJobId = WWPS_JOBS[jr.jobId]
+          if (!loxoJobId) {
+            console.warn(`Unknown job ID: ${jr.jobId}, skipping`)
+            continue
+          }
 
-        // Stage advancement: 2 calls max, clean activity feed
-        // 1. added_to_job (1941928) → lands in Longlist — only if not already on job
-        // 2. consultant_interview (1941943) → moves to Screening
-        if (!alreadyOnJob) {
+          // Check if person is already on this job
+          let alreadyOnJob = false
+          try {
+            const candRes = await axios.get(
+              `${LOXO_BASE}/jobs/${loxoJobId}/candidates`,
+              { params: { person_id: loxoid, per_page: 1 }, headers: loxoHeaders(), timeout: 10000 }
+            )
+            const candidates = candRes.data?.candidates || candRes.data || []
+            alreadyOnJob = candidates.some(
+              (c) => String(c.person_id || c.person?.id) === String(loxoid)
+            )
+          } catch (lookupErr) {
+            console.error(`Job candidate lookup error (${jr.jobId}):`, lookupErr?.response?.data || lookupErr.message)
+          }
+
+          // Add to job if not already
+          if (!alreadyOnJob) {
+            try {
+              await axios.post(
+                `${LOXO_BASE}/person_events`,
+                { person_event: { person_id: loxoid, job_id: loxoJobId, activity_type_id: 1941928 } },
+                { headers: loxoHeaders(), timeout: 10000 }
+              )
+            } catch (evErr) {
+              console.error(`Added to job error (${jr.jobId}):`, evErr?.response?.data || evErr.message)
+            }
+          }
+
+          // Move to Screening stage
+          try {
+            await axios.post(
+              `${LOXO_BASE}/person_events`,
+              { person_event: { person_id: loxoid, job_id: loxoJobId, activity_type_id: 1941943 } },
+              { headers: loxoHeaders(), timeout: 10000 }
+            )
+          } catch (evErr) {
+            console.error(`Screening stage error (${jr.jobId}):`, evErr?.response?.data || evErr.message)
+          }
+
+          // Per-job activity note
+          const ratings = answers?.tech_ratings || {}
+          const ratingLines = (answers?.tech_stack || []).map(t => {
+            const r = ratings[t]
+            const label = r != null ? ['None','Beginner','Intermediate','Advanced','Expert'][r] || r : 'N/A'
+            return `${t}: ${label}`
+          }).join(' | ')
+
+          const bd = jr.breakdown || {}
+          const noteLines = [
+            `<li><strong>Role:</strong> ${jr.title}</li>`,
+            `<li><strong>Tech Ratings:</strong> ${ratingLines}</li>`,
+            `<li><strong>Notice:</strong> ${{'1-2_weeks':'1-2 Weeks','30_days':'30 Days','60_days':'60 Days','90_days':'90 Days','calendar_month':'Calendar Month'}[answers?.notice_period] || answers?.notice_period || ''}</li>`,
+            `<li><strong>Current CTC:</strong> R${(answers?.current_ctc || 0).toLocaleString('en-ZA')}</li>`,
+            `<li><strong>Timezone:</strong> ${answers?.timezone_overlap === 'yes' ? 'Yes' : 'No'}</li>`,
+            `<li><strong>Contract:</strong> ${answers?.contract_terms === 'yes' ? 'Yes' : 'No'}</li>`,
+          ].join('')
+
           try {
             await axios.post(
               `${LOXO_BASE}/person_events`,
               {
                 person_event: {
                   person_id: loxoid,
-                  job_id: WWPS_JOB_ID,
-                  activity_type_id: 1941928, // added_to_job
+                  job_id: loxoJobId,
+                  activity_type_id: 1941923,
+                  notes: `<p><strong>Portal Screening — ${jr.title}</strong></p><ul>${noteLines}</ul><p><strong>Score: ${jr.score}/100 | Fit: ${jr.fitLevel}</strong></p><p>Stack: ${bd.tech||0}/50 | Skills: ${bd.competencies||0}/20 | Notice: ${bd.notice||0}/15 | CTC: ${bd.ctc||0}/15</p>`,
                 },
               },
               { headers: loxoHeaders(), timeout: 10000 }
             )
-          } catch (evErr) {
-            console.error('Added to job error:', evErr?.response?.data || evErr.message)
+          } catch (noteErr) {
+            console.error(`Activity note error (${jr.jobId}):`, noteErr?.response?.data || noteErr.message)
           }
+
+          await new Promise(r => setTimeout(r, 300)) // Rate limit between jobs
         }
 
-        try {
-          await axios.post(
-            `${LOXO_BASE}/person_events`,
-            {
-              person_event: {
-                person_id: loxoid,
-                job_id: WWPS_JOB_ID,
-                activity_type_id: 1941943, // consultant_interview → Screening
-              },
-            },
-            { headers: loxoHeaders(), timeout: 10000 }
-          )
-        } catch (evErr) {
-          console.error('Screening stage error:', evErr?.response?.data || evErr.message)
-        }
-
-        // Person-level activity note with full screening results
+        // Person-level summary note (no job_id)
         const techMapped = (answers?.tech_stack || []).filter(t => TECH_STACK_IDS[t])
         const techUnmapped = (answers?.tech_stack || []).filter(t => !TECH_STACK_IDS[t])
-        const noteLines = [
-          `<li><strong>Recruitment Preference:</strong> ${{'actively_pursuing':'Actively pursuing','open_to_exceptional':'Open to exceptional','not_looking':'Not looking'}[answers?.recruitment_preference] || answers?.recruitment_preference || ''}</li>`,
-          answers?.recruitment_reason ? `<li><strong>Reason for leaving:</strong> ${answers.recruitment_reason}</li>` : '',
-          `<li><strong>Preferred Roles:</strong> ${(answers?.preferred_roles || []).join(', ') || 'None selected'}</li>`,
-          `<li><strong>Tech Stack:</strong> ${techMapped.join(', ')}${techUnmapped.length ? ' + ' + techUnmapped.join(', ') : ''}</li>`,
-          `<li><strong>EE Status:</strong> ${{'african_black':'African Black','coloured':'Coloured','indian':'Indian','asian':'Asian','white_sa':'White SA','foreign_citizen_post1994':'Foreign - Citizenship post 1994','foreign_permanent_residency':'Foreign - Permanent Resident','foreign_work_permit':'Foreign - Work Permit','foreign_no_right':'Foreign - No Right to Work'}[answers?.ee_status] || answers?.ee_status || ''}</li>`,
-          answers?.id_number ? `<li><strong>ID Number:</strong> ${answers.id_number}</li>` : '',
-          `<li><strong>Disabled:</strong> ${answers?.disabled ? 'Yes' : 'No'}</li>`,
+        const summaryLines = [
+          `<li><strong>Recruitment:</strong> ${{'actively_pursuing':'Actively pursuing','open_to_exceptional':'Open to exceptional','not_looking':'Not looking'}[answers?.recruitment_preference] || ''}</li>`,
+          answers?.recruitment_reason ? `<li><strong>Reason:</strong> ${answers.recruitment_reason}</li>` : '',
+          `<li><strong>Roles:</strong> ${(answers?.preferred_roles || []).join(', ')}</li>`,
+          `<li><strong>Tech:</strong> ${techMapped.join(', ')}${techUnmapped.length ? ' + ' + techUnmapped.join(', ') : ''}</li>`,
+          `<li><strong>EE:</strong> ${{'african_black':'African Black','coloured':'Coloured','indian':'Indian','asian':'Asian','white_sa':'White SA','foreign_citizen_post1994':'Foreign - Citizenship post 1994','foreign_permanent_residency':'Foreign - Permanent Resident','foreign_work_permit':'Foreign - Work Permit','foreign_no_right':'Foreign - No Right to Work'}[answers?.ee_status] || ''}</li>`,
+          answers?.id_number ? `<li><strong>ID:</strong> ${answers.id_number}</li>` : '',
           `<li><strong>Residence:</strong> ${answers?.residence || ''}</li>`,
           `<li><strong>Remote:</strong> ${answers?.remote_willing === 'yes' ? 'Yes' : 'No'} | <strong>Hybrid:</strong> ${answers?.hybrid_willing === 'yes' ? 'Yes' : 'No'}</li>`,
-          `<li><strong>Timezone Overlap (4-9pm SAST):</strong> ${answers?.timezone_overlap === 'yes' ? 'Yes' : 'No'}</li>`,
-          `<li><strong>Fixed-term Contract:</strong> ${answers?.contract_terms === 'yes' ? 'Yes' : 'No'}</li>`,
-          `<li><strong>Notice Period:</strong> ${{'1-2_weeks':'1-2 Weeks','30_days':'30 Days','60_days':'60 Days','90_days':'90 Days','calendar_month':'Calendar Month'}[answers?.notice_period] || answers?.notice_period || ''}</li>`,
-          answers?.notice_considerations ? `<li><strong>Notice Notes:</strong> ${answers.notice_considerations}</li>` : '',
-          `<li><strong>Current CTC:</strong> R${(answers?.current_ctc || 0).toLocaleString('en-ZA')} p/a</li>`,
-          answers?.previous_bonus ? `<li><strong>Previous Bonus:</strong> R${answers.previous_bonus.toLocaleString('en-ZA')}</li>` : '',
-          answers?.repayable_on_leaving ? `<li><strong>Repayable on leaving:</strong> ${answers.repayable_on_leaving}</li>` : '',
-          answers?.annual_leave_days ? `<li><strong>Annual Leave:</strong> ${answers.annual_leave_days} days</li>` : '',
-          answers?.expected_ctc ? `<li><strong>Expected CTC:</strong> R${answers.expected_ctc.toLocaleString('en-ZA')} p/a</li>` : '',
+          `<li><strong>Expected CTC:</strong> R${(answers?.expected_ctc || 0).toLocaleString('en-ZA')}</li>`,
         ].filter(Boolean).join('')
 
         try {
@@ -389,13 +420,13 @@ app.post('/api/submit', async (req, res) => {
               person_event: {
                 person_id: loxoid,
                 activity_type_id: 1941923,
-                notes: `<p><strong>Truffle Portal Screening Results</strong></p><ul>${noteLines}</ul><p><strong>Score: ${score}/100 | Fit: ${fit_level}</strong></p>`,
+                notes: `<p><strong>Portal Screening Summary</strong></p><ul>${summaryLines}</ul><p><strong>Overall: ${score}/100 | ${fit_level}</strong></p>`,
               },
             },
             { headers: loxoHeaders(), timeout: 10000 }
           )
         } catch (noteErr) {
-          console.error('Activity note error:', noteErr?.response?.data || noteErr.message)
+          console.error('Summary note error:', noteErr?.response?.data || noteErr.message)
         }
       }
     } catch (loxoErr) {
@@ -407,9 +438,9 @@ app.post('/api/submit', async (req, res) => {
   if (pool) {
     try {
       await pool.query(
-        `INSERT INTO submissions (name, email, phone, answers, score, fit_level, loxoid)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        [name || null, email, phone || null, JSON.stringify(answers), score, fit_level, loxoid ? String(loxoid) : null]
+        `INSERT INTO submissions (name, email, phone, answers, score, fit_level, job_results, loxoid)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+        [name || null, email, phone || null, JSON.stringify(answers), score, fit_level, JSON.stringify(jobResults || []), loxoid ? String(loxoid) : null]
       )
     } catch (dbErr) {
       console.error('DB insert error:', dbErr.message)

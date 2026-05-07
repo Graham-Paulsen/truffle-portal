@@ -34,13 +34,15 @@
               @update:reason="answers.recruitment_reason = $event"
             />
 
-            <!-- Step 2: Preferred Opportunity -->
+            <!-- Step 2: Preferred Opportunity + Skills + Proficiency -->
             <Step2Opportunity
               v-else-if="currentStep === 2"
               :model-roles="answers.preferred_roles"
               :model-tech="answers.tech_stack"
+              :model-ratings="answers.tech_ratings"
               @update:roles="answers.preferred_roles = $event"
               @update:tech="answers.tech_stack = $event"
+              @update:ratings="answers.tech_ratings = $event"
             />
 
             <!-- Step 3: Right to Work & EE -->
@@ -149,10 +151,60 @@ import Step8Compensation from '../components/ScreenSteps/Step8Compensation.vue'
 const router = useRouter()
 
 const currentStep = ref(1)
-// Transition removed — using fade globally
 const ctcError = ref('')
 const reasonError = ref('')
 const restoredFromStorage = ref(false)
+
+// ── Per-job config ──
+interface JobConfig {
+  id: string
+  title: string
+  loxoJobId: number
+  budget: number
+  techMinimums: Record<string, number>
+}
+
+const JOBS: JobConfig[] = [
+  { id: 'intermediate_data_engineer', title: 'Intermediate Data Engineer', loxoJobId: 3568888, budget: 900000,  techMinimums: { sql: 3, ssis: 2, ssas: 2, adf: 2, powerbi: 2 } },
+  { id: 'senior_data_engineer',       title: 'Senior Data Engineer',       loxoJobId: 3568889, budget: 1400000, techMinimums: { sql: 4, ssis: 3, ssas: 3, adf: 3, powerbi: 3 } },
+  { id: 'senior_sql_developer',       title: 'Senior SQL Developer',       loxoJobId: 3568890, budget: 0,       techMinimums: { sql: 4, ssis: 2, ssas: 2, adf: 1, powerbi: 1 } },
+  { id: 'senior_bi_developer',        title: 'Senior BI Developer',        loxoJobId: 3568891, budget: 1100000, techMinimums: { sql: 3, ssis: 2, ssas: 3, adf: 2, powerbi: 4 } },
+]
+
+// Core tech: pill text → scoring key
+const TECH_PILL_MAP: Record<string, string> = {
+  'SQL Server / T-SQL': 'sql',
+  'SSIS':               'ssis',
+  'SSAS':               'ssas',
+  'SSAS Tabular':       'ssas',
+  'Azure Data Factory': 'adf',
+  'Power BI':           'powerbi',
+}
+
+// Competency: pill text → scoring key
+const COMPETENCY_PILL_MAP: Record<string, string> = {
+  'ETL / ELT':                              'etl',
+  'Query Tuning / Indexing':                'query_tuning',
+  'Data Modelling':                         'dw_modelling',
+  'Reverse Engineering / Legacy Refactoring': 'reverse_engineering',
+  'Production Monitoring & Debugging':      'prod_monitoring',
+}
+
+type FitLevel = 'strong' | 'possible' | 'under_review'
+
+interface JobResult {
+  jobId: string
+  title: string
+  loxoJobId: number
+  score: number
+  fitLevel: FitLevel
+  breakdown: {
+    tech: number
+    competencies: number
+    notice: number
+    ctc: number
+  }
+}
 
 const answers = reactive({
   // Step 1
@@ -161,6 +213,7 @@ const answers = reactive({
   // Step 2
   preferred_roles: [] as string[],
   tech_stack: [] as string[],
+  tech_ratings: {} as Record<string, number>,
   // Step 3
   ee_status: '' as string,
   id_number: '' as string,
@@ -248,71 +301,101 @@ function onCtcChange(val: number | null) {
 }
 
 function goBack() {
-  // No transition direction needed with fade
   currentStep.value--
 }
 
-type FitLevel = 'strong' | 'possible' | 'under_review'
+// ── Scoring helpers ──
 
-function calculateScore(): { score: number; fitLevel: FitLevel } {
-  // Hard fails
+function getRating(pill: string): number {
+  return answers.tech_ratings[pill] ?? 0
+}
+
+// Get effective rating for a core tech key (handles multiple pills mapping to same key)
+function getTechKeyRating(key: string): number {
+  for (const [pill, k] of Object.entries(TECH_PILL_MAP)) {
+    if (k === key && answers.tech_stack.includes(pill)) {
+      return getRating(pill)
+    }
+  }
+  return 0
+}
+
+function scoreForJob(job: JobConfig): JobResult {
+  // Binary gates
   if (answers.timezone_overlap === 'no' || answers.contract_terms === 'no') {
-    return { score: 0, fitLevel: 'under_review' }
+    return {
+      jobId: job.id, title: job.title, loxoJobId: job.loxoJobId,
+      score: 0, fitLevel: 'under_review',
+      breakdown: { tech: 0, competencies: 0, notice: 0, ctc: 0 },
+    }
   }
 
-  let score = 0
+  // 1. Core tech score (50 pts)
+  let techScore = 50
+  let disqualified = false
+  for (const [key, minimum] of Object.entries(job.techMinimums)) {
+    const rating = getTechKeyRating(key)
+    if (rating === 0) {
+      disqualified = true
+      break
+    }
+    if (rating < minimum) {
+      techScore -= 10
+    }
+  }
+  if (disqualified) {
+    return {
+      jobId: job.id, title: job.title, loxoJobId: job.loxoJobId,
+      score: 0, fitLevel: 'under_review',
+      breakdown: { tech: 0, competencies: 0, notice: 0, ctc: 0 },
+    }
+  }
+  techScore = Math.max(0, techScore)
 
-  // Recruitment preference (10)
-  if (answers.recruitment_preference === 'actively_pursuing') score += 10
-  else if (answers.recruitment_preference === 'open_to_exceptional') score += 7
-  else score += 2
+  // 2. Competency score (20 pts max — sum of up to 5 × 4)
+  let competencyScore = 0
+  for (const pill of Object.keys(COMPETENCY_PILL_MAP)) {
+    if (answers.tech_stack.includes(pill)) {
+      competencyScore += getRating(pill)
+    }
+  }
+  competencyScore = Math.min(20, competencyScore)
 
-  // Role match — any selection counts (5)
-  if (answers.preferred_roles.length > 0) score += 5
+  // 3. Notice period (15 pts)
+  let noticeScore = 0
+  if (answers.notice_period === '1-2_weeks')       noticeScore = 15
+  else if (answers.notice_period === '30_days')     noticeScore = 10
+  else if (answers.notice_period === 'calendar_month') noticeScore = 10
+  else if (answers.notice_period === '60_days')     noticeScore = 5
+  // 90_days → 0
 
-  // Tech stack depth (15 max)
-  const techCount = answers.tech_stack.length
-  if (techCount >= 10) score += 15
-  else if (techCount >= 6) score += 10
-  else if (techCount >= 3) score += 5
-
-  // EE / Right to work (5)
-  if (answers.ee_status) score += 5
-
-  // Remote willingness (10)
-  if (answers.remote_willing === 'yes') score += 10
-
-  // Hybrid willingness (5)
-  if (answers.hybrid_willing === 'yes') score += 5
-
-  // Timezone overlap (20)
-  if (answers.timezone_overlap === 'yes') score += 20
-
-  // Contract terms (10)
-  if (answers.contract_terms === 'yes') score += 10
-
-  // Notice period (10)
-  if (['1-2_weeks', '30_days'].includes(answers.notice_period)) score += 10
-  else if (answers.notice_period === 'calendar_month') score += 8
-  else if (answers.notice_period === '60_days') score += 5
-  else if (answers.notice_period === '90_days') score += 2
-
-  // CTC range (10)
-  const ctc = answers.current_ctc || 0
-  if (ctc >= 500000 && ctc <= 900000) score += 10
-  else if (ctc > 900000 && ctc <= 1200000) score += 7
-  else if (ctc > 1200000) score += 3
-
-  let fitLevel: FitLevel
-  if (score >= 75) {
-    fitLevel = 'strong'
-  } else if (score >= 50) {
-    fitLevel = 'possible'
-  } else {
-    fitLevel = 'under_review'
+  // 4. CTC vs budget (15 pts) — skipped if budget = 0
+  let ctcScore = 0
+  if (job.budget > 0 && answers.expected_ctc) {
+    const ratio = answers.expected_ctc / job.budget
+    if (ratio >= 0.85 && ratio <= 0.95)       ctcScore = 15
+    else if (ratio >= 0.75 && ratio < 0.85)   ctcScore = 10
+    else if (ratio >= 0.65 && ratio < 0.75)   ctcScore = 5
+    else if (ratio > 0.95)                    ctcScore = 8
+    // < 0.65 → 0
   }
 
-  return { score, fitLevel }
+  const total = techScore + competencyScore + noticeScore + ctcScore
+  const fitLevel: FitLevel = total >= 75 ? 'strong' : total >= 50 ? 'possible' : 'under_review'
+
+  return {
+    jobId: job.id,
+    title: job.title,
+    loxoJobId: job.loxoJobId,
+    score: total,
+    fitLevel,
+    breakdown: { tech: techScore, competencies: competencyScore, notice: noticeScore, ctc: ctcScore },
+  }
+}
+
+function calculateScores(): JobResult[] {
+  const selectedJobs = JOBS.filter(j => answers.preferred_roles.includes(j.id))
+  return selectedJobs.map(scoreForJob)
 }
 
 function goNext() {
@@ -327,7 +410,7 @@ function goNext() {
     reasonError.value = ''
   }
 
-  // Validate CTC on step 8
+  // Final step — calculate per-job scores and navigate to Complete
   if (currentStep.value === 8) {
     const ctc = answers.current_ctc
     if (!ctc || ctc < 500000 || ctc > 1700000) {
@@ -336,18 +419,27 @@ function goNext() {
     }
     ctcError.value = ''
 
-    const result = calculateScore()
+    const jobResults = calculateScores()
+
+    // Best overall score / fit level across selected jobs
+    const fitOrder: Record<FitLevel, number> = { strong: 3, possible: 2, under_review: 1 }
+    const bestScore = jobResults.reduce((max, r) => Math.max(max, r.score), 0)
+    const bestFitLevel = jobResults.reduce<FitLevel>(
+      (best, r) => fitOrder[r.fitLevel] > fitOrder[best] ? r.fitLevel : best,
+      'under_review'
+    )
+
     sessionStorage.setItem('screening_result', JSON.stringify({
       answers: { ...answers },
-      score: result.score,
-      fitLevel: result.fitLevel,
+      score: bestScore,
+      fitLevel: bestFitLevel,
+      jobResults,
     }))
     localStorage.removeItem('truffle_portal_form_v2')
     router.push('/complete')
     return
   }
 
-  // No transition direction needed with fade
   currentStep.value++
 }
 </script>
