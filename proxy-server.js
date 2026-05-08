@@ -44,6 +44,11 @@ async function ensureTable() {
 
 ensureTable().catch(console.error)
 
+// Migration: add job_results column if missing
+if (pool) {
+  pool.query(`ALTER TABLE submissions ADD COLUMN IF NOT EXISTS job_results JSONB`).catch(() => {})
+}
+
 // Serve Vue build in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'dist')))
